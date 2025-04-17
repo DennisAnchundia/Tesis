@@ -1,0 +1,133 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import AuthenticatedHome from '../views/AuthenticatedHome.vue'
+import PatientsView from '../views/psychologist/PatientsView.vue'
+import StudentDetailsView from '../views/psychologist/StudentDetailsView.vue'
+import EditStudentView from '../views/psychologist/EditStudentView.vue'
+
+const routes = [
+  {
+    path: '/',
+    name: 'public-home',
+    component: HomeView
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('x-token')
+      if (token) {
+        const userData = JSON.parse(localStorage.getItem('user-data') || '{}')
+        next(userData.user.role === 'ADMIN' ? '/home' : '/psychologist/dashboard')
+      } else {
+        next()
+      }
+    }
+  },
+  // Rutas del Admin
+  {
+    path: '/home',
+    name: 'authenticated-home',
+    component: AuthenticatedHome,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/dashboard',
+    name: 'admin-dashboard',
+    component: () => import('../views/DashboardView.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: 'profile',
+        name: 'admin-profile',
+        component: () => import('../views/ProfileView.vue')
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('../views/UsersView.vue')
+      }
+    ]
+  },
+  // Rutas del Psicólogo
+  {
+    path: '/psychologist/dashboard',
+    component: () => import('../views/psychologist/DashboardView.vue'),
+    meta: { requiresAuth: true, requiresPsychologist: true },
+    children: [
+      {
+        path: '',
+        name: 'psychologist-home',
+        component: () => import('../views/psychologist/HomeView.vue')
+      },
+      {
+        path: 'profile',
+        name: 'psychologist-profile',
+        component: () => import('../views/psychologist/ProfileView.vue')
+      },
+      {
+        path: 'patients',
+        name: 'psychologist-patients',
+        component: PatientsView
+      },
+      {
+        path: 'patients/:id',
+        name: 'student-details',
+        component: StudentDetailsView
+      },
+      {
+        path: 'patients/:id/edit',
+        name: 'edit-student',
+        component: EditStudentView
+      }
+    ]
+  },
+  // Redirección para la ruta /psychologist
+  {
+    path: '/psychologist',
+    redirect: '/psychologist/dashboard'
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
+  const requiresPsychologist = to.matched.some(record => record.meta.requiresPsychologist)
+  const token = localStorage.getItem('x-token')
+
+  if (requiresAuth && !token) {
+    next('/login')
+    return
+  }
+
+  if (requiresAuth && token) {
+    const userData = JSON.parse(localStorage.getItem('user-data') || '{}')
+    
+    if (!userData || !userData.user) {
+      next('/login')
+      return
+    }
+
+    // Verificar roles
+    if (requiresAdmin && userData.user.role !== 'ADMIN') {
+      next('/psychologist/dashboard')
+      return
+    }
+
+    if (requiresPsychologist && userData.user.role !== 'PSYCHOLOGIST') {
+      next('/home')
+      return
+    }
+  }
+
+  next()
+})
+
+export default router
