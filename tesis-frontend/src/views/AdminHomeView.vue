@@ -1,3 +1,11 @@
+<!--
+Componente AdminHomeView
+
+Este componente representa el panel de control principal para los administradores del sistema.
+Muestra un resumen de las estadísticas importantes y proporciona acceso rápido a las
+funcionalidades principales del sistema.
+-->
+
 <template>
   <div class="admin-home">
     <!-- Tarjeta de bienvenida -->
@@ -79,7 +87,14 @@
 
 <script>
 export default {
+  /**
+   * Nombre del componente para su identificación en Vue DevTools
+   */
   name: 'AdminHomeView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial del componente
+   */
   data() {
     return {
       userData: null,
@@ -91,22 +106,42 @@ export default {
       }
     }
   },
+  /**
+   * Propiedades computadas del componente
+   * Estas propiedades se recalculan automáticamente cuando sus dependencias cambian
+   */
   computed: {
+    /**
+     * Calcula el nombre completo del usuario a partir de firstName y lastName
+     * @returns {string} Nombre completo del usuario o cadena vacía si no hay datos
+     */
     userName() {
       if (this.userData?.firstName && this.userData?.lastName) {
         return `${this.userData.firstName} ${this.userData.lastName}`
       }
       return this.userData?.name || ''
     },
+    /**
+     * Determina si el usuario es administrador
+     * @returns {string} 'Administrador' si el usuario es admin, cadena vacía en caso contrario
+     */
     userRole() {
       return this.userData?.user?.role === 'ADMIN' ? 'Administrador' : ''
     },
+    /**
+     * Genera las iniciales del usuario para mostrar en el avatar
+     * @returns {string} Iniciales del usuario en mayúsculas o cadena vacía si no hay datos
+     */
     userInitials() {
       if (this.userData?.firstName && this.userData?.lastName) {
         return (this.userData.firstName[0] + this.userData.lastName[0]).toUpperCase()
       }
       return ''
     },
+    /**
+     * Genera un color consistente para el avatar basado en el nombre del usuario
+     * @returns {string} Color en formato hexadecimal
+     */
     avatarColor() {
       const colors = [
         '#1976D2', // primary-color
@@ -119,11 +154,19 @@ export default {
       return colors[Math.abs(hash) % colors.length]
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta cuando el componente es creado
+   * Carga los datos iniciales necesarios para el dashboard
+   */
   created() {
     this.loadUserData()
     this.loadStats()
   },
   methods: {
+    /**
+     * Carga los datos del usuario autenticado desde el servidor
+     * Utiliza el token JWT almacenado en localStorage para la autenticación
+     */
     async loadUserData() {
       try {
         const token = localStorage.getItem('x-token')
@@ -140,6 +183,10 @@ export default {
         console.error('Error loading user data:', error)
       }
     },
+    /**
+     * Carga las estadísticas generales del sistema desde el servidor
+     * Incluye total de usuarios, psicólogos, estudiantes y evaluaciones
+     */
     async loadStats() {
       try {
         const token = localStorage.getItem('x-token')
@@ -151,6 +198,9 @@ export default {
         const data = await response.json()
         if (data.ok) {
           this.stats = data.stats
+          console.log('Estadísticas cargadas:', this.stats)
+        } else {
+          console.error('Error en la respuesta:', data.msg)
         }
       } catch (error) {
         console.error('Error loading stats:', error)

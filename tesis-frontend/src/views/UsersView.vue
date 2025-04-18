@@ -1,5 +1,15 @@
-<!-- UsersView.vue -->
-<!-- Este componente maneja la gestión de psicólogos, incluyendo listado, búsqueda, creación, edición y eliminación -->
+<!--
+Componente UsersView
+
+Este componente implementa la gestión completa de psicólogos en el sistema.
+Características:
+- CRUD completo de psicólogos (Crear, Leer, Actualizar, Eliminar)
+- Búsqueda y filtrado dinámico
+- Interfaz de tarjetas con estadísticas
+- Modales para operaciones
+- Validación de formularios
+- Confirmación de acciones críticas
+-->
 <template>
   <div class="users-view">
     <!-- Encabezado de la página con título y botón para agregar -->
@@ -166,24 +176,45 @@
 </template>
 
 <script>
+/**
+ * Importación de dependencias
+ * @requires sweetalert2 - Biblioteca para mostrar alertas personalizadas
+ */
 import Swal from 'sweetalert2'
 
+/**
+ * Componente de gestión de psicólogos
+ * @component
+ */
 export default {
+  /**
+   * Nombre del componente para su identificación
+   */
   name: 'UsersView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial de la gestión de usuarios
+   */
   data() {
     return {
-      // Lista de usuarios y filtros
+      /**
+       * Lista de usuarios y estado de filtros
+       */
       users: [],
       filteredUsers: [],
       searchQuery: '',
 
-      // Estados de los modales
+      /**
+       * Estados de visibilidad de los modales
+       */
       showAddModal: false,
       showEditModal: false,
       showDeleteModal: false,
       selectedUser: null,
 
-      // Datos del formulario
+      /**
+       * Datos del formulario de usuario
+       */
       formData: {
         firstName: '',
         lastName: '',
@@ -192,7 +223,9 @@ export default {
         role: 'PSYCHOLOGIST'
       },
 
-      // Errores de validación del formulario
+      /**
+       * Errores de validación por campo del formulario
+       */
       formErrors: {
         firstName: '',
         lastName: '',
@@ -200,7 +233,9 @@ export default {
         password: ''
       },
 
-      // Expresiones regulares para validación
+      /**
+       * Expresiones regulares para validación de campos
+       */
       validationRules: {
         nameRegex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,30}$/,
         emailRegex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -208,8 +243,14 @@ export default {
     }
   },
 
+  /**
+   * Propiedades computadas del componente
+   */
   computed: {
-    // Verifica si el formulario es válido
+    /**
+     * Verifica si todos los campos del formulario son válidos
+     * @returns {boolean} Estado de validez del formulario
+     */
     isFormValid() {
       return this.formData.firstName && 
              this.formData.lastName && 
@@ -219,12 +260,22 @@ export default {
     }
   },
 
+  /**
+   * Ciclo de vida: Se ejecuta al crear el componente
+   * Carga inicial de usuarios
+   */
   created() {
     this.fetchUsers()
   },
 
+  /**
+   * Métodos del componente
+   */
   methods: {
-    // Valida un campo específico
+    /**
+     * Valida un campo específico del formulario
+     * @param {string} field - Nombre del campo a validar
+     */
     validateField(field) {
       // Limpiar el error del campo
       this.formErrors[field] = ''
@@ -266,7 +317,10 @@ export default {
       }
     },
 
-    // Valida todo el formulario
+    /**
+     * Valida todos los campos del formulario
+     * @returns {boolean} Resultado de la validación
+     */
     validateForm() {
       // Validar todos los campos
       this.validateField('firstName')
@@ -290,7 +344,10 @@ export default {
       return !hasErrors
     },
 
-    // Obtiene la lista de psicólogos del backend
+    /**
+     * Obtiene la lista de psicólogos desde el servidor
+     * @async
+     */
     async fetchUsers() {
       try {
         const token = localStorage.getItem('x-token')
@@ -312,12 +369,18 @@ export default {
       }
     },
 
-    // Genera las iniciales para el avatar
+    /**
+     * Genera las iniciales del nombre para el avatar
+     * @param {Object} user - Usuario del que se generan las iniciales
+     * @returns {string} Iniciales en mayúsculas
+     */
     getInitials(user) {
       return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
     },
 
-    // Filtra la lista de psicólogos según la búsqueda
+    /**
+     * Filtra la lista de psicólogos según el término de búsqueda
+     */
     filterPsychologists() {
       this.filteredUsers = this.users.filter(user => {
         return user.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -326,7 +389,10 @@ export default {
       })
     },
 
-    // Prepara el formulario para editar un usuario
+    /**
+     * Prepara el formulario con los datos del usuario a editar
+     * @param {Object} user - Usuario a editar
+     */
     editUser(user) {
       this.selectedUser = user
       this.formData = { 
@@ -339,7 +405,10 @@ export default {
       this.showEditModal = true
     },
 
-    // Guarda o actualiza un usuario
+    /**
+     * Crea o actualiza un usuario en el servidor
+     * @async
+     */
     async saveUser() {
       if (!this.validateForm()) return
 
@@ -410,7 +479,10 @@ export default {
       }
     },
 
-    // Confirma antes de eliminar
+    /**
+     * Muestra diálogo de confirmación antes de eliminar
+     * @param {Object} user - Usuario a eliminar
+     */
     confirmDelete(user) {
       this.selectedUser = user
       Swal.fire({
@@ -429,7 +501,10 @@ export default {
       })
     },
 
-    // Elimina un usuario (soft delete)
+    /**
+     * Realiza la eliminación lógica del usuario
+     * @async
+     */
     async deleteUser() {
       try {
         const token = localStorage.getItem('x-token')
@@ -477,7 +552,9 @@ export default {
       }
     },
 
-    // Cierra los modales y reinicia el formulario
+    /**
+     * Cierra los modales y reinicia el estado del formulario
+     */
     closeModal() {
       this.showAddModal = false
       this.showEditModal = false
@@ -501,6 +578,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de usuarios */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .users-view {

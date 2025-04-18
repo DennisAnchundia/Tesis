@@ -1,3 +1,14 @@
+<!--
+Componente EditStudentView
+
+Este componente permite a los psicólogos editar la información de un estudiante.
+Características:
+- Formulario dividido en secciones (Información Personal y Académica)
+- Validación de campos requeridos
+- Manejo de estados de carga
+- Notificaciones de éxito/error usando SweetAlert2
+-->
+
 <template>
   <div class="student-details-container">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -118,7 +129,14 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 export default {
+  /**
+   * Nombre del componente para su identificación en Vue DevTools
+   */
   name: 'EditStudentView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial con datos del estudiante y estado de carga
+   */
   data() {
     return {
       loading: true,
@@ -133,10 +151,19 @@ export default {
       }
     };
   },
+  /**
+   * Ciclo de vida: Se ejecuta cuando el componente es creado
+   * Carga los detalles del estudiante desde el servidor
+   */
   async created() {
     await this.fetchStudentDetails();
   },
   methods: {
+    /**
+     * Obtiene los detalles del estudiante desde el servidor
+     * Utiliza el ID del estudiante desde los parámetros de la ruta
+     * Actualiza el estado local con la información recibida
+     */
     async fetchStudentDetails() {
       try {
         const token = localStorage.getItem('x-token');
@@ -160,6 +187,12 @@ export default {
         this.goBack();
       }
     },
+    /**
+     * Maneja el envío del formulario
+     * Envía los datos actualizados al servidor
+     * Muestra notificaciones de éxito/error
+     * Redirige al detalle del estudiante si la actualización es exitosa
+     */
     async handleSubmit() {
       try {
         const token = localStorage.getItem('x-token');
@@ -189,6 +222,10 @@ export default {
         });
       }
     },
+    /**
+     * Navega de vuelta a la vista de detalles del estudiante
+     * Utiliza el ID del estudiante de los parámetros de la ruta
+     */
     goBack() {
       this.$router.push(`/psychologist/dashboard/patients/${this.$route.params.id}`);
     }
@@ -197,6 +234,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para el componente EditStudentView */
 .student-details-container {
   padding: 2rem;
   max-width: 1200px;

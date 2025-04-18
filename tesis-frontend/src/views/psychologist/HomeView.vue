@@ -1,3 +1,15 @@
+<!--
+Componente HomeView (Vista Principal del Psicólogo)
+
+Este componente implementa la vista principal para los psicólogos.
+Características:
+- Tarjeta de bienvenida personalizada
+- Información del perfil del psicólogo
+- Resumen de pacientes asignados y sesiones
+- Avatar dinámico con iniciales
+- Diseño responsivo
+-->
+
 <template>
   <div class="psychologist-home">
     <div class="welcome-card">
@@ -35,26 +47,56 @@
 </template>
 
 <script>
+/**
+ * Importación de dependencias
+ * @requires vuex - Estado global de la aplicación
+ */
 import { mapState } from 'vuex'
 
+/**
+ * Componente de vista principal para psicólogos
+ * @component
+ */
 export default {
+  /**
+   * Nombre del componente para su identificación
+   */
   name: 'PsychologistHomeView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial
+   */
   data() {
     return {
       studentCount: 0
     }
   },
+  /**
+   * Propiedades computadas del componente
+   */
   computed: {
     ...mapState(['userData']),
+    /**
+     * Obtiene el nombre completo del psicólogo
+     * @returns {string} Nombre completo formateado
+     */
     userName() {
       if (this.userData?.user?.firstName && this.userData?.user?.lastName) {
         return `${this.userData.user.firstName} ${this.userData.user.lastName}`
       }
       return this.userData?.user?.name || ''
     },
+    /**
+     * Obtiene el rol del usuario
+     * @returns {string} Rol del usuario (siempre 'Psicólogo')
+     */
     userRole() {
       return 'Psicólogo'
     },
+    /**
+     * Genera las iniciales del nombre del psicólogo
+     * @returns {string} Iniciales en mayúsculas (máximo 2 caracteres)
+     */
     userInitials() {
       if (!this.userName) return ''
       return this.userName
@@ -64,6 +106,10 @@ export default {
         .toUpperCase()
         .slice(0, 2)
     },
+    /**
+     * Genera un color consistente para el avatar basado en el nombre
+     * @returns {string} Color en formato hexadecimal
+     */
     avatarColor() {
       const colors = [
         '#1976D2', // primary-color
@@ -76,6 +122,10 @@ export default {
       return colors[Math.abs(hash) % colors.length]
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta cuando el componente es creado
+   * Obtiene la cantidad de estudiantes asignados al psicólogo
+   */
   async created() {
     try {
       const token = localStorage.getItem('x-token')
@@ -96,6 +146,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista principal del psicólogo */
 .psychologist-home {
   padding: 2rem;
   max-width: 800px;

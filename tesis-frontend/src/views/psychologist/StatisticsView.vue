@@ -1,3 +1,13 @@
+<!--
+Componente StatisticsView
+
+Este componente muestra estadísticas detalladas de las evaluaciones de riesgo suicida.
+Visualiza los datos mediante gráficos de tipo donut para:
+- Niveles de riesgo (Bajo, Medio, Alto)
+- Distribución por género
+- Distribución por carrera
+-->
+
 <template>
   <div class="statistics-container">
     <h1 class="text-center mb-4">Estadísticas</h1>
@@ -49,10 +59,13 @@
 </template>
 
 <script setup>
+// Importaciones necesarias de Vue y Axios
 import { ref, computed, defineExpose, nextTick } from 'vue';
 import axios from 'axios';
 
+// Estado reactivo para el indicador de carga y los datos estadísticos
 const loading = ref(true);
+// Estructura de datos para almacenar las estadísticas
 const statistics = ref({
   total: 0,
   riskLevels: [],
@@ -60,6 +73,7 @@ const statistics = ref({
   careerStats: []
 });
 
+// Configuración del gráfico de niveles de riesgo
 const riskChartOptions = {
   chart: {
     type: 'donut'
@@ -97,6 +111,7 @@ const riskChartOptions = {
   }
 };
 
+// Calcula las series de datos para el gráfico de niveles de riesgo
 const riskChartSeries = computed(() => {
   const riskLevels = statistics.value.riskLevels || [];
   const seriesData = [0, 0, 0]; // [Bajo, Medio, Alto]
@@ -114,6 +129,11 @@ const riskChartSeries = computed(() => {
   return seriesData;
 });
 
+/**
+ * Carga las estadísticas desde el servidor
+ * Utiliza el token JWT para la autenticación
+ * Actualiza el estado local con los datos recibidos
+ */
 const loadStatistics = async () => {
   try {
     loading.value = true;
@@ -136,7 +156,7 @@ const loadStatistics = async () => {
 
 loadStatistics();
 
-// Opciones para el gráfico de género
+// Configuración del gráfico de distribución por género
 const genderChartOptions = {
   labels: ['Masculino', 'Femenino'],
   legend: {
@@ -159,7 +179,8 @@ const genderChartOptions = {
   }
 };
 
-// Opciones para el gráfico de carrera
+// Configuración del gráfico de distribución por carrera
+// Se usa ref() porque las etiquetas se actualizan dinámicamente
 const careerChartOptions = ref({
   legend: {
     position: 'bottom'
@@ -182,7 +203,8 @@ const careerChartOptions = ref({
   labels: []
 });
 
-// Series para el gráfico de género
+// Calcula las series de datos para el gráfico de género
+// Transforma los datos del backend al formato requerido por ApexCharts
 const genderChartSeries = computed(() => {
   const genderStats = statistics.value.genderStats || [];
   const seriesData = [0, 0]; // [Masculino, Femenino]

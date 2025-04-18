@@ -1,3 +1,15 @@
+<!--
+Componente ProfileView
+
+Este componente implementa la vista de perfil del administrador.
+Características:
+- Información personal del administrador
+- Estadísticas del sistema
+- Actividad reciente
+- Avatar dinámico con iniciales
+- Diseño responsivo y moderno
+-->
+
 <template>
   <div class="profile-view">
     <div class="profile-header">
@@ -82,8 +94,16 @@
 </template>
 
 <script>
+/**
+ * Componente de vista de perfil del administrador
+ * @component
+ */
 export default {
   name: 'ProfileView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial del perfil
+   */
   data() {
     return {
       adminData: {
@@ -99,17 +119,35 @@ export default {
       recentActivities: []
     }
   },
+  /**
+   * Propiedades computadas del componente
+   */
   computed: {
+    /**
+     * Calcula las iniciales del nombre del administrador
+     * @returns {string} Iniciales en mayúsculas
+     */
     getInitials() {
       return `${this.adminData.firstName.charAt(0)}${this.adminData.lastName.charAt(0)}`.toUpperCase()
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta al crear el componente
+   * Carga los datos iniciales del perfil
+   */
   async created() {
     await this.fetchAdminData()
     await this.fetchStats()
     await this.fetchRecentActivities()
   },
+  /**
+   * Métodos del componente
+   */
   methods: {
+    /**
+     * Obtiene los datos del administrador desde el servidor
+     * @async
+     */
     async fetchAdminData() {
       try {
         const token = localStorage.getItem('x-token')
@@ -125,6 +163,10 @@ export default {
         console.error('Error:', err)
       }
     },
+    /**
+     * Obtiene las estadísticas del sistema
+     * @async
+     */
     async fetchStats() {
       try {
         const token = localStorage.getItem('x-token')
@@ -140,6 +182,10 @@ export default {
         console.error('Error fetching stats:', err)
       }
     },
+    /**
+     * Obtiene el historial de actividades recientes
+     * @async
+     */
     async fetchRecentActivities() {
       try {
         const token = localStorage.getItem('x-token')
@@ -154,6 +200,11 @@ export default {
         console.error('Error fetching recent activities:', err)
       }
     },
+    /**
+     * Determina el icono a mostrar según el tipo de actividad
+     * @param {string} type - Tipo de actividad
+     * @returns {string} Clase CSS del icono
+     */
     getActivityIcon(type) {
       switch (type) {
         case 'new-psychologist':
@@ -166,6 +217,11 @@ export default {
           return 'fas fa-question-circle'
       }
     },
+    /**
+     * Formatea una marca de tiempo a formato legible
+     * @param {string} timestamp - Marca de tiempo ISO
+     * @returns {string} Hora formateada
+     */
     formatTimestamp(timestamp) {
       const date = new Date(timestamp)
       return date.toLocaleString('es-ES', {
@@ -179,14 +235,17 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de perfil */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Contenedor principal del perfil */
 .profile-view {
   font-family: var(--font-family);
   background-color: var(--bg-secondary);
   min-height: 100vh;
 }
 
+/* Encabezado del perfil con foto de portada */
 .profile-header {
   position: relative;
   margin-bottom: 2rem;

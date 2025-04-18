@@ -1,3 +1,15 @@
+<!--
+Componente LoginView
+
+Este componente implementa la vista de inicio de sesión.
+Características:
+- Formulario de autenticación con validación
+- Animaciones y efectos visuales
+- Manejo de errores y estados de carga
+- Redirección basada en roles
+- Almacenamiento de token JWT
+-->
+
 <template>
   <div class="login-view">
     <div class="login-container">
@@ -62,11 +74,27 @@
 </template>
 
 <script>
+/**
+ * Importación de dependencias
+ * @requires axios - Cliente HTTP para realizar peticiones
+ * @requires sweetalert2 - Biblioteca para mostrar alertas personalizadas
+ */
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
+/**
+ * Componente de vista de inicio de sesión
+ * @component
+ */
 export default {
+  /**
+   * Nombre del componente para su identificación
+   */
   name: 'LoginView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial del formulario
+   */
   data() {
     return {
       formData: {
@@ -77,7 +105,15 @@ export default {
       error: null
     }
   },
+  /**
+   * Métodos del componente
+   */
   methods: {
+    /**
+     * Maneja el envío del formulario de inicio de sesión
+     * @async
+     * @returns {Promise<void>}
+     */
     async handleSubmit() {
       if (this.loading) return
       
@@ -142,6 +178,10 @@ export default {
       }
     },
     // Método para validar el formulario
+    /**
+     * Valida los campos del formulario
+     * @returns {boolean} Resultado de la validación
+     */
     validateForm() {
       if (!this.formData.email || !this.formData.password) {
         this.error = 'Por favor, complete todos los campos'
@@ -150,6 +190,10 @@ export default {
       return true
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta al crear el componente
+   * Verifica si existe un token y redirecciona si es necesario
+   */
   created() {
     if (localStorage.getItem('x-token')) {
       this.$router.push('/home')
@@ -159,8 +203,10 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de inicio de sesión */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Vista principal con fondo y centrado */
 .login-view {
   min-height: 100vh;
   display: flex;

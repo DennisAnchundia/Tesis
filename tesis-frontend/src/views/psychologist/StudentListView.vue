@@ -1,3 +1,15 @@
+<!--
+Componente StudentListView
+
+Este componente implementa la vista de lista de estudiantes para los psicólogos.
+Características principales:
+- Búsqueda dinámica de estudiantes
+- Filtros por carrera, semestre y estado
+- Vista en cuadrícula con tarjetas de estudiante
+- Acciones rápidas para evaluaciones y agendamiento
+- Navegación a detalles del estudiante
+-->
+
 <template>
   <div class="student-list">
     <PageHeader
@@ -133,20 +145,49 @@
 </template>
 
 <script>
+/**
+ * Importación de dependencias y componentes
+ * @requires vue - Composables de Vue 3
+ * @requires PageHeader - Componente de encabezado de página
+ * @requires BaseButton - Componente base para botones
+ */
 import { ref, computed } from 'vue'
 import PageHeader from '@/components/PageHeader.vue'
 import BaseButton from '@/components/BaseButton.vue'
 
+/**
+ * Componente para mostrar y gestionar la lista de estudiantes
+ * @component
+ */
 export default {
   name: 'StudentListView',
+  /**
+   * Componentes utilizados en la vista
+   */
   components: {
     PageHeader,
     BaseButton
   },
+  /**
+   * Configuración del componente usando la Composition API
+   * @returns {Object} Estado y métodos del componente
+   */
   setup() {
+    /**
+     * Estado para mostrar/ocultar la barra de búsqueda
+     */
     const showSearch = ref(false)
+    /**
+     * Estado para mostrar/ocultar el panel de filtros
+     */
     const showFilters = ref(false)
+    /**
+     * Término de búsqueda para filtrar estudiantes
+     */
     const searchQuery = ref('')
+    /**
+     * Filtros aplicables a la lista de estudiantes
+     */
     const filters = ref({
       career: '',
       semester: '',
@@ -154,6 +195,9 @@ export default {
     })
 
     // Datos de ejemplo
+    /**
+     * Lista de estudiantes (datos de ejemplo)
+     */
     const students = ref([
       {
         id: 1,
@@ -181,6 +225,10 @@ export default {
       }
     ])
 
+    /**
+     * Lista filtrada de estudiantes basada en la búsqueda y filtros
+     * @type {import('vue').ComputedRef<Array>}
+     */
     const filteredStudents = computed(() => {
       return students.value.filter(student => {
         const matchesSearch = searchQuery.value === '' ||
@@ -277,6 +325,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de lista de estudiantes */
 .student-list {
   animation: fadeIn var(--transition-normal);
 }

@@ -1,3 +1,14 @@
+<!--
+Componente HomeView
+
+Este componente implementa la página de inicio principal de la aplicación.
+Características:
+- Hero section con mensaje de bienvenida
+- Sección de características principales
+- Call to Action (CTA) para acceder al dashboard
+- Diseño responsivo y animaciones
+-->
+
 <template>
   <div class="home">
     <header class="hero">
@@ -33,16 +44,23 @@
 </template>
 
 <script>
+/**
+ * Componente de la página de inicio
+ * @component
+ */
 export default {
   name: 'HomeView'
 }
 </script>
 
 <style scoped>
+/* Estilos específicos para la página de inicio */
+/* Contenedor principal con padding */
 .home {
   padding: 20px;
 }
 
+/* Sección hero con gradiente y estilo llamativo */
 .hero {
   text-align: center;
   padding: 60px 20px;
@@ -62,6 +80,7 @@ export default {
   opacity: 0.9;
 }
 
+/* Grid responsivo para las características */
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -69,6 +88,7 @@ export default {
   margin: 40px 0;
 }
 
+/* Tarjetas de características con efectos hover */
 .feature-card {
   background: white;
   padding: 30px;
@@ -98,6 +118,7 @@ export default {
   line-height: 1.6;
 }
 
+/* Sección Call to Action */
 .cta {
   text-align: center;
   padding: 60px 20px;
@@ -111,6 +132,7 @@ export default {
   margin-bottom: 20px;
 }
 
+/* Botón de llamada a la acción */
 .cta-button {
   display: inline-block;
   padding: 12px 24px;

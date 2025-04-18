@@ -1,3 +1,20 @@
+<!--
+Componente PatientsView
+
+Este componente maneja la vista de pacientes del psicólogo, permitiendo:
+- Listar todos los pacientes asignados
+- Buscar pacientes por nombre
+- Agregar nuevos pacientes
+- Editar información de pacientes existentes
+- Ver detalles de cada paciente
+
+Características:
+- Formulario modal con validación en tiempo real
+- Búsqueda dinámica de pacientes
+- Manejo de estados de carga
+- Notificaciones de éxito/error usando SweetAlert2
+-->
+
 <template>
   <div class="patients-view">
     <div class="header-section">
@@ -261,11 +278,24 @@
 </template>
 
 <script>
+/**
+ * Importación de dependencias
+ * @requires axios - Cliente HTTP para realizar peticiones al servidor
+ * @requires sweetalert2 - Biblioteca para mostrar notificaciones elegantes
+ */
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
+/**
+ * Componente para gestionar la lista de pacientes del psicólogo
+ * @component
+ */
 export default {
   name: 'PatientsView',
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial con datos de pacientes, formulario y validación
+   */
   data() {
     return {
       users: [],
@@ -292,10 +322,21 @@ export default {
       formErrors: {}
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta cuando el componente es creado
+   * Carga la lista inicial de pacientes
+   */
   async created() {
     await this.fetchUsers()
   },
+  /**
+   * Métodos del componente para manejar la lógica de negocio
+   */
   methods: {
+    /**
+     * Obtiene la lista de pacientes desde el servidor
+     * @async
+     */
     async fetchUsers() {
       try {
         this.loading = true
@@ -316,9 +357,19 @@ export default {
         this.loading = false
       }
     },
+    /**
+     * Genera las iniciales del nombre completo del paciente
+     * @param {string} firstName - Nombre del paciente
+     * @param {string} lastName - Apellido del paciente
+     * @returns {string} Iniciales en mayúsculas
+     */
     getInitials(firstName, lastName) {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
     },
+    /**
+     * Filtra la lista de pacientes según el término de búsqueda
+     * Actualiza la lista filtrada en tiempo real
+     */
     filterPatients() {
       const searchLower = this.searchTerm.toLowerCase()
       this.filteredUsers = this.users.filter(user => 
@@ -326,6 +377,10 @@ export default {
         user.lastName.toLowerCase().includes(searchLower)
       )
     },
+    /**
+     * Cierra el modal y reinicia el formulario
+     * Limpia los errores de validación
+     */
     closeModal() {
       this.showModal = false
       this.selectedStudent = null
@@ -345,6 +400,10 @@ export default {
       }
       this.formErrors = {}
     },
+    /**
+     * Valida un campo específico del formulario
+     * @param {string} field - Nombre del campo a validar
+     */
     validateField(field) {
       this.formErrors[field] = ''
 
@@ -441,6 +500,11 @@ export default {
           break
       }
     },
+    /**
+     * Guarda o actualiza la información de un paciente
+     * @async
+     * Realiza validación completa antes de enviar al servidor
+     */
     async saveStudent() {
       const fieldsToValidate = Object.keys(this.formData).filter(field => 
         field !== 'password' || !this.selectedStudent
@@ -510,6 +574,10 @@ export default {
         })
       }
     },
+    /**
+     * Prepara el formulario para editar un paciente existente
+     * @param {Object} student - Datos del paciente a editar
+     */
     editStudent(student) {
       this.selectedStudent = student
       this.formData = {
@@ -528,12 +596,23 @@ export default {
       }
       this.showModal = true
     },
+    /**
+     * Navega a la vista de detalles del paciente
+     * @param {Object} student - Datos del paciente a visualizar
+     */
     viewStudentDetails(student) {
       console.log('Navigating to student:', student)
       this.$router.push(`/psychologist/dashboard/patients/${student._id}`)
     }
   },
+  /**
+   * Propiedades computadas del componente
+   */
   computed: {
+    /**
+     * Verifica si el formulario es válido para enviar
+     * @returns {boolean} true si no hay errores de validación
+     */
     isFormValid() {
       return Object.values(this.formErrors).every(error => error === '')
     }
@@ -542,6 +621,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de pacientes */
 .patients-view {
   padding: 2rem;
   background-color: #f8f9fa;

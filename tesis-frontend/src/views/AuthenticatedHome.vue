@@ -1,3 +1,14 @@
+<!--
+Componente AuthenticatedHome
+
+Este componente implementa la vista principal para usuarios autenticados.
+Características:
+- Panel de bienvenida personalizado
+- Acciones rápidas para navegación
+- Tarjetas interactivas con animaciones
+- Diseño responsivo con grid adaptable
+-->
+
 <template>
   <div class="auth-home">
     <header class="welcome-header">
@@ -28,18 +39,25 @@
 </template>
 
 <script>
+/**
+ * Componente de vista principal para usuarios autenticados
+ * @component
+ */
 export default {
   name: 'AuthenticatedHome'
 }
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista principal autenticada */
+/* Contenedor principal con márgenes y ancho máximo */
 .auth-home {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/* Encabezado de bienvenida centrado */
 .welcome-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -55,6 +73,7 @@ export default {
   font-size: 1.2rem;
 }
 
+/* Grid de acciones rápidas con diseño responsivo */
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -62,6 +81,7 @@ export default {
   padding: 1rem;
 }
 
+/* Tarjetas de acción con efectos de hover */
 .action-card {
   background: white;
   padding: 2rem;

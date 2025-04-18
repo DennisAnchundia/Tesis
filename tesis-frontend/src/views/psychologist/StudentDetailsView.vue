@@ -1,3 +1,15 @@
+<!--
+Componente StudentDetailsView
+
+Este componente muestra la información detallada de un estudiante y permite su gestión.
+Características principales:
+- Visualización de información personal, académica y laboral
+- Gestión de notas clínicas
+- Gestión de citas médicas
+- Evaluaciones de riesgo suicida
+- Acciones de edición y eliminación del estudiante
+-->
+
 <template>
   <div class="student-details-container">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -300,12 +312,20 @@ import Swal from 'sweetalert2'
 import AppointmentForm from '@/components/AppointmentForm.vue'
 import SuicideAssessmentForm from '@/components/SuicideAssessmentForm.vue'
 
+/**
+ * Componente para visualizar y gestionar los detalles de un estudiante
+ * @component
+ */
 export default {
   name: 'StudentDetailsView',
   components: {
     AppointmentForm,
     SuicideAssessmentForm
   },
+  /**
+   * Estado local del componente
+   * @returns {Object} Estado inicial con datos del estudiante, citas, notas y formularios
+   */
   data() {
     return {
       student: null,
@@ -322,12 +342,23 @@ export default {
       suicideAssessments: []
     }
   },
+  /**
+   * Ciclo de vida: Se ejecuta cuando el componente es creado
+   * Carga los detalles del estudiante y sus citas
+   */
   async created() {
     await this.fetchStudentDetails()
     await this.fetchAppointments()
     await this.fetchSuicideAssessments()
   },
+  /**
+   * Métodos del componente para manejar la lógica de negocio
+   */
   methods: {
+    /**
+     * Obtiene la lista de citas del estudiante desde el servidor
+     * @async
+     */
     async fetchAppointments() {
       try {
         const token = localStorage.getItem('x-token');
@@ -350,22 +381,39 @@ export default {
       }
     },
 
+    /**
+     * Muestra el formulario para agregar una nueva nota clínica
+     */
     addNote() {
       this.editingNote = null;
       this.editingNoteId = null;
       this.noteContent = '';
       this.showAddNoteModal = true;
     },
+    /**
+     * Prepara el formulario para editar una nota existente
+     * @param {Object} note - Nota a editar
+     */
     editNote(note) {
       this.editingNote = note;
       this.editingNoteId = note._id;
       this.noteContent = note.note;
       this.showAddNoteModal = true;
     },
+    /**
+     * Obtiene el nombre completo del psicólogo
+     * @param {Object} psychologist - Datos del psicólogo
+     * @returns {string} Nombre completo del psicólogo
+     */
     getPsychologistName(psychologist) {
       if (!psychologist) return 'No asignado';
       return `${psychologist.firstName} ${psychologist.lastName}`;
     },
+    /**
+     * Obtiene la información detallada de un psicólogo
+     * @param {string} psychologistId - ID del psicólogo
+     * @async
+     */
     async fetchPsychologistInfo(psychologistId) {
       if (!this.psychologists[psychologistId]) {
         try {
@@ -382,6 +430,11 @@ export default {
         }
       }
     },
+    /**
+     * Formatea una fecha para su visualización
+     * @param {string} date - Fecha en formato ISO
+     * @returns {string} Fecha formateada
+     */
     formatDate(date) {
       return new Date(date).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -391,6 +444,10 @@ export default {
         minute: '2-digit'
       });
     },
+    /**
+     * Obtiene los detalles completos del estudiante
+     * @async
+     */
     async fetchStudentDetails() {
       try {
         const token = localStorage.getItem('x-token');
@@ -407,6 +464,10 @@ export default {
         this.loading = false;
       }
     },
+    /**
+     * Guarda o actualiza una nota clínica
+     * @async
+     */
     async saveNote() {
       try {
         const token = localStorage.getItem('x-token');
@@ -455,6 +516,11 @@ export default {
         });
       }
     },
+    /**
+     * Elimina una nota clínica
+     * @param {string} noteId - ID de la nota a eliminar
+     * @async
+     */
     async deleteNote(noteId) {
       try {
         const result = await Swal.fire({
@@ -499,9 +565,16 @@ export default {
         })
       }
     },
+    /**
+     * Navega a la vista de edición del estudiante
+     */
     editStudent() {
       this.$router.push(`/psychologist/dashboard/patients/${this.$route.params.id}/edit`);
     },
+    /**
+     * Muestra un diálogo de confirmación para eliminar al estudiante
+     * @async
+     */
     async confirmDelete() {
       const result = await Swal.fire({
         title: '¿Estás seguro?',
@@ -519,6 +592,10 @@ export default {
       }
       
     },
+    /**
+     * Elimina al estudiante del sistema
+     * @async
+     */
     async deleteStudent() {
       try {
         const token = localStorage.getItem('x-token');
@@ -548,6 +625,10 @@ export default {
       }
     },
 
+    /**
+     * Maneja la creación exitosa de una cita
+     * @param {Object} appointment - Datos de la nueva cita
+     */
     onAppointmentCreated(appointment) {
       this.appointments.push(appointment);
       this.appointments.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -559,11 +640,21 @@ export default {
       });
     },
 
+    /**
+     * Prepara el formulario para editar una cita
+     * @param {Object} appointment - Cita a editar
+     */
     async editAppointment(appointment) {
       this.editingAppointment = appointment;
       this.showAppointmentForm = true;
     },
 
+    /**
+     * Actualiza el estado de una cita
+     * @param {string} appointmentId - ID de la cita
+     * @param {string} newStatus - Nuevo estado de la cita
+     * @async
+     */
     async updateAppointmentStatus(appointmentId, newStatus) {
       try {
         const token = localStorage.getItem('x-token');
@@ -595,6 +686,11 @@ export default {
       }
     },
 
+    /**
+     * Cancela una cita programada
+     * @param {string} appointmentId - ID de la cita a cancelar
+     * @async
+     */
     async cancelAppointment(appointmentId) {
       const result = await Swal.fire({
         title: '¿ Estás seguro?',
@@ -636,9 +732,16 @@ export default {
         }
       }
     },
+    /**
+     * Muestra el formulario para programar una nueva cita
+     */
     scheduleAppointment() {
       this.$router.push(`/psychologist/appointments/new?studentId=${this.$route.params.id}`)
     },
+    /**
+     * Obtiene las evaluaciones de riesgo suicida del estudiante
+     * @async
+     */
     async fetchSuicideAssessments() {
       try {
         const token = localStorage.getItem('x-token');
@@ -660,6 +763,10 @@ export default {
         });
       }
     },
+    /**
+     * Maneja la creación exitosa de una evaluación
+     * @param {Object} assessment - Datos de la nueva evaluación
+     */
     onAssessmentCreated(assessment) {
       this.suicideAssessments.unshift(assessment);
       Swal.fire({
@@ -673,6 +780,7 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos específicos para la vista de detalles del estudiante */
 .student-details-container {
   padding: 2rem;
   max-width: 1200px;

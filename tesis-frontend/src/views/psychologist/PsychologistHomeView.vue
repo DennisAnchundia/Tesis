@@ -1,10 +1,20 @@
+<!--
+Componente PsychologistHomeView
+
+Este componente representa el panel principal para los psicólogos del sistema.
+Muestra un resumen de sus estadísticas, acciones rápidas y actividad reciente.
+Permite acceder a las principales funcionalidades relacionadas con la gestión de estudiantes y evaluaciones.
+-->
+
 <template>
   <div class="psychologist-home">
+    <!-- Encabezado de la página con título y subtítulo -->
     <PageHeader
       title="Panel del Psicólogo"
       subtitle="Bienvenido a tu espacio de trabajo"
     />
 
+    <!-- Panel de estadísticas rápidas que muestra información clave para el psicólogo -->
     <div class="stats-overview">
       <div class="stat-card">
         <i class="fas fa-user-graduate stat-icon"></i>
@@ -36,6 +46,7 @@
       <div class="title-line"></div>
     </div>
 
+    <!-- Cuadrícula de acciones rápidas con tarjetas clickeables -->
     <div class="quick-actions">
       <ActionCard
         icon="fas fa-user-graduate"
@@ -71,6 +82,7 @@
       <div class="title-line"></div>
     </div>
 
+    <!-- Lista de actividades recientes mostradas como tarjetas -->
     <div class="recent-activity">
       <div class="card activity-card">
         <div class="activity-header">
