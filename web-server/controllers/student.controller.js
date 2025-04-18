@@ -342,7 +342,7 @@ const getStudentById = async(req = request, res = response) => {
     const { id } = req.params;
 
     try {
-        // 1. Buscar estudiante
+        // 1. Buscar estudiante con sus datos básicos
         const student = await Student.findById(id)
             .populate('assignedPsychologist', ['firstName', 'lastName', 'email'])
             .populate('clinicalNotes.createdBy', ['firstName', 'lastName']);
@@ -365,7 +365,32 @@ const getStudentById = async(req = request, res = response) => {
             });
         }
 
-        res.json(student);
+        // 4. Obtener las evaluaciones del estudiante
+        const SuicideAssessment = require('../models/suicideAssessment');
+        const assessments = await SuicideAssessment.find({ student: id })
+            .populate('psychologist', ['firstName', 'lastName'])
+            .sort({ date: -1 }); // Ordenar por fecha, más recientes primero
+
+        // 5. Obtener las citas del estudiante
+        const Appointment = require('../models/appointment');
+        const appointments = await Appointment.find({ 
+            student: id,
+            active: true // Solo citas activas
+        })
+        .populate('psychologist', ['firstName', 'lastName'])
+        .sort({ date: -1 }); // Ordenar por fecha, más recientes primero
+
+        // 6. Preparar respuesta con toda la información
+        const studentData = student.toObject();
+        studentData.assessments = assessments;
+        studentData.appointments = appointments;
+
+        // 7. Ordenar notas clínicas por fecha, más recientes primero
+        if (studentData.clinicalNotes && studentData.clinicalNotes.length > 0) {
+            studentData.clinicalNotes.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        res.json(studentData);
 
     } catch (error) {
         console.log(error);

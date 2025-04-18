@@ -9,14 +9,30 @@
       <p class="text-4xl font-bold mb-2">{{ statistics.total }}</p>
       <p class="text-gray-600 mb-4">Evaluaciones Totales</p>
 
-      <apexchart
-        v-if="statistics.riskLevels.length > 0"
-        type="donut"
-        height="350"
-        :options="chartOptions"
-        :series="chartSeries"
-      />
-      <p v-else class="text-center text-gray-500">No hay datos disponibles</p>
+      <div class="charts-container">
+        <div class="chart-wrapper">
+          <h3>Niveles de Riesgo</h3>
+          <apexchart
+            v-if="statistics.riskLevels.length > 0"
+            type="donut"
+            height="350"
+            :options="riskChartOptions"
+            :series="riskChartSeries"
+          />
+          <p v-else class="text-center text-gray-500">No hay datos disponibles</p>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Evaluaciones por Género</h3>
+          <apexchart
+            v-if="statistics.genderStats.length > 0"
+            type="donut"
+            height="350"
+            :options="genderChartOptions"
+            :series="genderChartSeries"
+          />
+          <p v-else class="text-center text-gray-500">No hay datos disponibles</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,10 +50,11 @@ export default {
     const loading = ref(true);
     const statistics = ref({
       total: 0,
-      riskLevels: []
+      riskLevels: [],
+      genderStats: []
     });
 
-    const chartOptions = {
+    const riskChartOptions = {
       chart: {
         type: 'donut'
       },
@@ -74,7 +91,7 @@ export default {
       }
     };
 
-    const chartSeries = computed(() => {
+    const riskChartSeries = computed(() => {
       console.log('Datos de estadísticas:', statistics.value);
       const riskLevels = statistics.value.riskLevels || [];
       console.log('Niveles de riesgo:', riskLevels);
@@ -142,11 +159,67 @@ export default {
 
     loadStatistics();
 
+    // Opciones para el gráfico de género
+    const genderChartOptions = {
+      chart: {
+        type: 'donut'
+      },
+      labels: ['Masculino', 'Femenino'],
+      colors: ['#3F51B5', '#E91E63'],
+      legend: {
+        position: 'bottom'
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '70%',
+            labels: {
+              show: true,
+              total: {
+                show: true,
+                label: 'Total',
+                formatter: () => {
+                  return statistics.value.total || 0;
+                }
+              }
+            }
+          }
+        }
+      },
+      noData: {
+        text: 'No hay datos disponibles',
+        align: 'center',
+        verticalAlign: 'middle',
+        offsetY: 0,
+        style: {
+          fontSize: '16px'
+        }
+      }
+    };
+
+    // Series para el gráfico de género
+    const genderChartSeries = computed(() => {
+      const genderStats = statistics.value.genderStats || [];
+      const seriesData = [0, 0]; // [Masculino, Femenino]
+
+      genderStats.forEach(stat => {
+        if (stat._id === 'M') {
+          seriesData[0] = stat.count;
+        } else if (stat._id === 'F') {
+          seriesData[1] = stat.count;
+        }
+      });
+
+      return seriesData;
+    });
+
     return {
       loading,
       statistics,
-      chartOptions,
-      chartSeries
+      riskChartOptions,
+      riskChartSeries,
+      genderChartOptions,
+      genderChartSeries
     };
   }
 };
@@ -155,6 +228,31 @@ export default {
 <style scoped>
 .statistics-view {
   padding: 1.5rem;
+}
+
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.chart-wrapper {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-wrapper h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1.25rem;
 }
 
 .spinner-border {

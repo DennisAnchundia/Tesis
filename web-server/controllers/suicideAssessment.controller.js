@@ -54,9 +54,21 @@ const createAssessment = async (req, res = response) => {
 
 const getAssessments = async (req, res = response) => {
     try {
-        const assessments = await SuicideAssessment.find()
-            .populate('student', 'name')
-            .populate('psychologist', 'name');
+        const { studentId } = req.query;
+        let query = {};
+
+        // Si se proporciona un studentId, filtrar por ese estudiante
+        if (studentId) {
+            query.student = studentId;
+        } else if (req.user.role === 'PSYCHOLOGIST') {
+            // Si es psicólogo y no se especifica estudiante, obtener solo sus evaluaciones
+            query.psychologist = req.user._id;
+        }
+
+        const assessments = await SuicideAssessment.find(query)
+            .populate('student', 'firstName lastName')
+            .populate('psychologist', 'firstName lastName')
+            .sort({ date: -1 }); // Ordenar por fecha, más recientes primero
 
         res.json({
             ok: true,
@@ -114,6 +126,28 @@ const getStatistics = async (req, res = response) => {
             }
         ]);
 
+        // Obtener conteo por género
+        const genderStats = await SuicideAssessment.aggregate([
+            {
+                $lookup: {
+                    from: 'students',
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'studentData'
+                }
+            },
+            { $unwind: '$studentData' },
+            {
+                $group: {
+                    _id: '$studentData.gender',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
         // Obtener total de evaluaciones
         const total = await SuicideAssessment.countDocuments();
 
@@ -121,7 +155,8 @@ const getStatistics = async (req, res = response) => {
             ok: true,
             statistics: {
                 total,
-                riskLevels
+                riskLevels,
+                genderStats
             }
         });
 

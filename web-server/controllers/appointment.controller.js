@@ -82,10 +82,15 @@ const createAppointment = async (req = request, res = response) => {
  */
 const getAppointments = async (req = request, res = response) => {
     try {
-        const { status } = req.query;
+        const { status, studentId } = req.query;
         
         // Construir query base
         let query = { active: true };
+        
+        // Si se especifica un estudiante, filtrar por ese estudiante
+        if (studentId) {
+            query.student = studentId;
+        }
         
         // Si es psicólogo, solo ver sus citas
         if (req.user.role === 'PSYCHOLOGIST') {
@@ -99,6 +104,7 @@ const getAppointments = async (req = request, res = response) => {
 
         const appointments = await Appointment.find(query)
             .populate('student', ['firstName', 'lastName', 'email'])
+            .sort({ date: -1 }) // Ordenar por fecha, más recientes primero
             .populate('psychologist', ['firstName', 'lastName', 'email'])
             .sort({ date: 1 }); // Ordenar por fecha ascendente
 
