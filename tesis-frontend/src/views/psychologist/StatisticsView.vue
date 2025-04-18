@@ -199,17 +199,19 @@ export default {
 
     // Series para el gráfico de género
     const genderChartSeries = computed(() => {
+      console.log('Estadísticas de género:', statistics.value.genderStats);
       const genderStats = statistics.value.genderStats || [];
       const seriesData = [0, 0]; // [Masculino, Femenino]
 
       genderStats.forEach(stat => {
-        if (stat._id === 'M') {
+        if (stat._id === 'MASCULINO') {
           seriesData[0] = stat.count;
-        } else if (stat._id === 'F') {
+        } else if (stat._id === 'FEMENINO') {
           seriesData[1] = stat.count;
         }
       });
 
+      console.log('Datos procesados por género:', seriesData);
       return seriesData;
     });
 

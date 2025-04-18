@@ -148,6 +148,30 @@ const getStatistics = async (req, res = response) => {
             }
         ]);
 
+        console.log('Estadísticas de género:', genderStats);
+
+        // Verificar si hay evaluaciones sin género asignado
+        const studentsWithoutGender = await SuicideAssessment.aggregate([
+            {
+                $lookup: {
+                    from: 'students',
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'studentData'
+                }
+            },
+            { $unwind: '$studentData' },
+            {
+                $match: {
+                    'studentData.gender': { $exists: false }
+                }
+            }
+        ]);
+
+        if (studentsWithoutGender.length > 0) {
+            console.log('Estudiantes sin género asignado:', studentsWithoutGender);
+        }
+
         // Obtener total de evaluaciones
         const total = await SuicideAssessment.countDocuments();
 
