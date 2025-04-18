@@ -147,9 +147,14 @@
         <div class="info-section">
           <div class="section-header">
             <h2><i class="ri-calendar-2-line"></i> Citas Médicas</h2>
-            <button class="btn btn-primary" @click="showAppointmentForm = true">
-              <i class="ri-add-line"></i> Nueva Cita
-            </button>
+            <div class="section-actions">
+              <button class="btn btn-warning" @click="showSuicideAssessmentForm = true">
+                <i class="ri-mental-health-line"></i> Realizar Evaluación
+              </button>
+              <button class="btn btn-primary" @click="showAppointmentForm = true">
+                <i class="ri-add-line"></i> Nueva Cita
+              </button>
+            </div>
           </div>
           
           <div class="appointments-list">
@@ -208,6 +213,13 @@
       </div>
     </div>
 
+    <SuicideAssessmentForm
+      v-if="showSuicideAssessmentForm"
+      :studentId="$route.params.id"
+      @close="showSuicideAssessmentForm = false"
+      @assessment-created="onAssessmentCreated"
+    />
+
     <div v-if="showAddNoteModal" class="modal-backdrop">
       <div class="modal-window">
         <div class="modal-header">
@@ -236,7 +248,42 @@
           <button class="btn-close" @click="showAppointmentForm = false">&times;</button>
         </div>
         <div class="modal-body">
-          <appointment-form
+          <div class="info-section" v-if="suicideAssessments.length > 0">
+            <h2><i class="ri-mental-health-line"></i> Evaluaciones de Riesgo</h2>
+            <div class="assessment-list">
+              <div v-for="assessment in suicideAssessments" :key="assessment._id" class="assessment-card">
+                <div class="assessment-header">
+                  <span class="assessment-date">
+                    <i class="ri-calendar-line"></i> {{ formatDate(assessment.date) }}
+                  </span>
+                  <span :class="['risk-level', 'risk-' + assessment.riskLevel.toLowerCase()]">
+                    Riesgo: {{ assessment.riskLevel }}
+                  </span>
+                </div>
+                <div class="assessment-details">
+                  <div v-if="assessment.deathWish.present" class="assessment-item">
+                    <strong>Deseos de morir:</strong> {{ assessment.deathWish.description }}
+                  </div>
+                  <div v-if="assessment.nonSpecificActiveSuicidalThoughts.present" class="assessment-item">
+                    <strong>Pensamientos suicidas:</strong> {{ assessment.nonSpecificActiveSuicidalThoughts.description }}
+                  </div>
+                  <div v-if="assessment.activeSuicidalIdeationWithMethods.present" class="assessment-item">
+                    <strong>Ideación con métodos:</strong> {{ assessment.activeSuicidalIdeationWithMethods.description }}
+                  </div>
+                  <div v-if="assessment.activeSuicidalIdeationWithIntent.present" class="assessment-item">
+                    <strong>Ideación con intención:</strong> {{ assessment.activeSuicidalIdeationWithIntent.description }}
+                  </div>
+                  <div v-if="assessment.activeSuicidalIdeationWithPlan.present" class="assessment-item">
+                    <strong>Ideación con plan:</strong> {{ assessment.activeSuicidalIdeationWithPlan.description }}
+                  </div>
+                  <div v-if="assessment.observations" class="assessment-item">
+                    <strong>Observaciones:</strong> {{ assessment.observations }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <AppointmentForm
             :student-id="$route.params.id"
             @created="onAppointmentCreated"
             @cancel="showAppointmentForm = false"
@@ -251,11 +298,13 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import AppointmentForm from '@/components/AppointmentForm.vue'
+import SuicideAssessmentForm from '@/components/SuicideAssessmentForm.vue'
 
 export default {
   name: 'StudentDetailsView',
   components: {
-    AppointmentForm
+    AppointmentForm,
+    SuicideAssessmentForm
   },
   data() {
     return {
@@ -268,13 +317,15 @@ export default {
       editingNoteId: null,
       appointments: [],
       editingAppointment: null,
-
-      psychologists: {}
+      psychologists: {},
+      showSuicideAssessmentForm: false,
+      suicideAssessments: []
     }
   },
   async created() {
     await this.fetchStudentDetails()
     await this.fetchAppointments()
+    await this.fetchSuicideAssessments()
   },
   methods: {
     async fetchAppointments() {
@@ -587,6 +638,35 @@ export default {
     },
     scheduleAppointment() {
       this.$router.push(`/psychologist/appointments/new?studentId=${this.$route.params.id}`)
+    },
+    async fetchSuicideAssessments() {
+      try {
+        const token = localStorage.getItem('x-token');
+        const response = await axios.get(
+          `http://localhost:3000/api/suicide-assessments?studentId=${this.$route.params.id}`,
+          {
+            headers: {
+              'x-token': token
+            }
+          }
+        );
+        this.suicideAssessments = response.data.assessments;
+      } catch (error) {
+        console.error('Error al cargar las evaluaciones:', error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar las evaluaciones'
+        });
+      }
+    },
+    onAssessmentCreated(assessment) {
+      this.suicideAssessments.unshift(assessment);
+      Swal.fire({
+        icon: 'success',
+        title: 'Evaluación Registrada',
+        text: `Nivel de riesgo detectado: ${assessment.riskLevel}`
+      });
     },
   }
 }
@@ -988,6 +1068,85 @@ export default {
 
 .btn-close:hover {
   color: #343a40;
+}
+
+.section-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.assessment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.assessment-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.assessment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.assessment-date {
+  color: #6c757d;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.risk-level {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.risk-bajo {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.risk-moderado {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.risk-alto {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.risk-muy_alto {
+  background-color: #dc3545;
+  color: white;
+}
+
+.assessment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.assessment-item {
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.assessment-item strong {
+  color: #2c3e50;
+  margin-right: 0.5rem;
 }
 
 .info-section h2 i {

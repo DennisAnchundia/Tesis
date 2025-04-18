@@ -4,6 +4,7 @@ const userRoute = require('../routes/user.route');
 const authRoute = require('../routes/auth.route');
 const studentRoute = require('../routes/student.route');
 const appointmentRoute = require('../routes/appointment.route');
+const suicideAssessmentRoute = require('../routes/suicideAssessment.routes');
 const dbConection = require('../database/config');
 const initRoles = require('../helpers/init-roles');
 
@@ -15,7 +16,8 @@ class Server {
       auth: '/api/auth',
       users: '/api/users',
       students: '/api/students',
-      appointments: '/api/appointments'
+      appointments: '/api/appointments',
+      suicideAssessments: '/api/suicide-assessments'
     };
     this.conectarDB();
     this.middleware();
@@ -37,6 +39,7 @@ class Server {
     this.app.use(this.paths.users, userRoute);
     this.app.use(this.paths.students, studentRoute);
     this.app.use(this.paths.appointments, appointmentRoute);
+    this.app.use(this.paths.suicideAssessments, suicideAssessmentRoute);
   }
 
   listen() {
