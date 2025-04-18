@@ -36,7 +36,7 @@ const suicideAssessmentSchema = Schema({
         present: {
             type: Boolean,
             required: function() {
-                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+                return this.nonSpecificActiveSuicidalThoughts.present === true;
             },
             default: false
         },
@@ -46,7 +46,7 @@ const suicideAssessmentSchema = Schema({
         present: {
             type: Boolean,
             required: function() {
-                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+                return this.nonSpecificActiveSuicidalThoughts.present === true;
             },
             default: false
         },
@@ -56,7 +56,7 @@ const suicideAssessmentSchema = Schema({
         present: {
             type: Boolean,
             required: function() {
-                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+                return this.nonSpecificActiveSuicidalThoughts.present === true;
             },
             default: false
         },
@@ -154,6 +154,11 @@ const suicideAssessmentSchema = Schema({
         max: 2
     }
 });
+
+// Método para validar si debe mostrar preguntas adicionales de ideación
+suicideAssessmentSchema.methods.shouldShowAdditionalIdeation = function() {
+    return this.nonSpecificActiveSuicidalThoughts.present === true;
+};
 
 // Método para validar si debe continuar con la evaluación de comportamiento
 suicideAssessmentSchema.methods.shouldContinueAssessment = function() {

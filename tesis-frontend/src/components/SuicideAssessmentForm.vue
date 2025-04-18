@@ -91,8 +91,8 @@
             </div>
           </div>
 
-          <!-- 3. Ideación suicida activa con cualquier método -->
-          <div class="assessment-item">
+          <!-- 3. Ideación suicida activa con cualquier método (solo si pregunta 2 es positiva) -->
+          <div v-if="showAdditionalIdeation" class="assessment-item">
             <h4>3. Ideación suicida activa con cualquier método (no un plan)</h4>
             <p class="description">
               El/la participante reconoce tener pensamientos suicidas y ha pensado en al menos un método durante el período de evaluación.
@@ -129,8 +129,8 @@
             </div>
           </div>
 
-          <!-- 4. Ideación suicida activa con intención (solo si hay ideación) -->
-          <div v-if="hasIdeation" class="assessment-item">
+          <!-- 4. Ideación suicida activa con intención (solo si pregunta 2 es positiva) -->
+          <div v-if="showAdditionalIdeation" class="assessment-item">
             <h4>4. Ideación suicida activa con intención</h4>
             <p class="description">
               El/la participante tiene pensamientos suicidas activos e informa tener cierta intención de llevarlos a cabo.
@@ -166,8 +166,8 @@
             </div>
           </div>
 
-          <!-- 5. Ideación suicida activa con plan (solo si hay ideación) -->
-          <div v-if="hasIdeation" class="assessment-item">
+          <!-- 5. Ideación suicida activa con plan (solo si pregunta 2 es positiva) -->
+          <div v-if="showAdditionalIdeation" class="assessment-item">
             <h4>5. Ideación suicida activa con plan</h4>
             <p class="description">
               Pensamientos de suicidio con detalles elaborados completa o parcialmente y el/la participante tiene cierta intención de llevarlos a cabo.
@@ -544,20 +544,12 @@ export default {
     }
   },
   computed: {
-    hasIdeation() {
-      return this.assessment.deathWish.present === true || 
-             this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
+    // Mostrar preguntas adicionales solo si la pregunta 2 es positiva
+    showAdditionalIdeation() {
+      return this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
     },
     canShowBehaviorSection() {
-      // Solo permitir mostrar la sección de comportamiento si ambas preguntas han sido respondidas
-      const question1Answered = this.assessment.deathWish.present !== null;
-      const question2Answered = this.assessment.nonSpecificActiveSuicidalThoughts.present !== null;
-      
-      if (!question1Answered || !question2Answered) {
-        return false;
-      }
-
-      // Si ambas son negativas, permitir continuar
+      // Solo mostrar la sección de comportamiento si ambas preguntas son negativas
       return this.assessment.deathWish.present === false && 
              this.assessment.nonSpecificActiveSuicidalThoughts.present === false;
     },
@@ -588,11 +580,8 @@ export default {
   },
   methods: {
     checkIdeation() {
-      const hasIdeation = this.assessment.deathWish.present === true || 
-                         this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
-
-      // Si no hay ideación, establecer las preguntas 3-5 en false
-      if (!hasIdeation) {
+      // Si la pregunta 2 es negativa, establecer las preguntas 3-5 en false
+      if (!this.assessment.nonSpecificActiveSuicidalThoughts.present) {
         this.assessment.activeSuicidalIdeationWithMethods.present = false;
         this.assessment.activeSuicidalIdeationWithMethods.description = '';
         this.assessment.activeSuicidalIdeationWithIntent.present = false;
@@ -613,12 +602,33 @@ export default {
       }
     },
     async submitAssessment() {
-      // Validar que se hayan respondido las preguntas 1 y 2
-      if (!this.canShowBehaviorSection && !this.shouldSkipValidation) {
+      // Validar que se hayan respondido todas las preguntas necesarias
+      let mensaje = '';
+      
+      // Si las preguntas 1 y 2 no están respondidas
+      if (this.assessment.deathWish.present === null || 
+          this.assessment.nonSpecificActiveSuicidalThoughts.present === null) {
+        mensaje = 'Por favor, responda las preguntas 1 y 2 de Ideación Suicida antes de continuar.';
+      }
+      // Si la pregunta 2 es positiva y faltan preguntas 3,4,5
+      else if (this.assessment.nonSpecificActiveSuicidalThoughts.present === true && 
+               (this.assessment.activeSuicidalIdeationWithMethods.present === null ||
+                this.assessment.activeSuicidalIdeationWithIntent.present === null ||
+                this.assessment.activeSuicidalIdeationWithPlan.present === null)) {
+        mensaje = 'Por favor, responda todas las preguntas de Ideación Suicida antes de continuar.';
+      }
+      // Si no es comportamiento suicida y faltan preguntas de ideación
+      else if (!this.canShowBehaviorSection && 
+               this.assessment.nonSpecificActiveSuicidalThoughts.present === false && 
+               this.assessment.deathWish.present === true) {
+        mensaje = 'Por favor, complete la evaluación de Ideación Suicida.';
+      }
+
+      if (mensaje) {
         await Swal.fire({
           icon: 'warning',
           title: 'Validación',
-          text: 'Por favor, responda las preguntas 1 y 2 de Ideación Suicida antes de continuar.'
+          text: mensaje
         });
         return;
       }

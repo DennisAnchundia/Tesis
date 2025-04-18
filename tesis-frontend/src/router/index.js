@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import AuthenticatedHome from '../views/AuthenticatedHome.vue'
 import PatientsView from '../views/psychologist/PatientsView.vue'
@@ -9,8 +8,7 @@ import EditStudentView from '../views/psychologist/EditStudentView.vue'
 const routes = [
   {
     path: '/',
-    name: 'public-home',
-    component: HomeView
+    redirect: '/login'
   },
   {
     path: '/login',
@@ -60,7 +58,7 @@ const routes = [
       {
         path: '',
         name: 'psychologist-home',
-        component: () => import('../views/psychologist/HomeView.vue')
+        component: () => import('../views/psychologist/PsychologistHomeView.vue')
       },
       {
         path: 'profile',
