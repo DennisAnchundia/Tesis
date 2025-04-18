@@ -205,6 +205,93 @@
             </div>
           </div>
 
+          <!-- Sección de Intensidad de la Ideación (solo si hay ideación) -->
+          <div v-if="showIntensitySection" class="assessment-section intensity-section">
+            <h3>Intensidad de la Ideación</h3>
+            <p class="section-description">
+              La siguiente característica debe ser evaluada con respecto al tipo más serio de ideación (p. ej., 1-5 de arriba, con 1 siendo el menos serio y 5 siendo el más serio).
+            </p>
+
+            <!-- Tipo de ideación más seria -->
+            <div class="assessment-item">
+              <h4>Ideación más seria</h4>
+              <div class="form-group">
+                <div class="select-group">
+                  <label>Tipo de ideación (1-5):</label>
+                  <select 
+                    v-model.number="assessment.ideationIntensity.mostSeriousIdeationType"
+                    required
+                  >
+                    <option value="">Seleccione el tipo</option>
+                    <option value="1">1. Deseo de estar muerto/a</option>
+                    <option value="2">2. Pensamientos suicidas activos no específicos</option>
+                    <option value="3">3. Ideación suicida activa con métodos</option>
+                    <option value="4">4. Ideación suicida activa con intención</option>
+                    <option value="5">5. Ideación suicida activa con plan</option>
+                  </select>
+                </div>
+                <div class="details-group">
+                  <label>Descripción de la ideación:</label>
+                  <textarea
+                    v-model="assessment.ideationIntensity.mostSeriousIdeationDescription"
+                    placeholder="Describa la ideación más seria..."
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Frecuencia de la ideación -->
+            <div class="assessment-item">
+              <h4>Frecuencia</h4>
+              <p class="description">¿Cuántas veces has tenido estos pensamientos?</p>
+              <div class="form-group">
+                <div class="radio-group">
+                  <label>
+                    <input
+                      type="radio"
+                      v-model.number="assessment.ideationIntensity.frequency"
+                      :value="1"
+                    >
+                    Sólo una vez
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      v-model.number="assessment.ideationIntensity.frequency"
+                      :value="2"
+                    >
+                    Unas pocas veces
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      v-model.number="assessment.ideationIntensity.frequency"
+                      :value="3"
+                    >
+                    Muchas
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      v-model.number="assessment.ideationIntensity.frequency"
+                      :value="4"
+                    >
+                    Todo el tiempo
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      v-model.number="assessment.ideationIntensity.frequency"
+                      :value="0"
+                    >
+                    No sabe/No corresponde
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Observaciones generales -->
           <div class="assessment-item">
             <h4>Observaciones Generales</h4>
@@ -487,6 +574,7 @@ export default {
     return {
       today: new Date().toISOString().split('T')[0],
       assessment: {
+        studentId: this.studentId,
         deathWish: {
           present: null,
           description: ''
@@ -506,6 +594,11 @@ export default {
         activeSuicidalIdeationWithPlan: {
           present: null,
           description: ''
+        },
+        ideationIntensity: {
+          mostSeriousIdeationType: '',
+          mostSeriousIdeationDescription: '',
+          frequency: null
         },
         observations: '',
         // Comportamiento Suicida
@@ -547,6 +640,11 @@ export default {
     // Mostrar preguntas adicionales solo si la pregunta 2 es positiva
     showAdditionalIdeation() {
       return this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
+    },
+    showIntensitySection() {
+      // Mostrar si la pregunta 1 o 2 son positivas
+      return this.assessment.deathWish.present === true || 
+             this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
     },
     canShowBehaviorSection() {
       // Solo mostrar la sección de comportamiento si ambas preguntas son negativas
@@ -617,6 +715,13 @@ export default {
                 this.assessment.activeSuicidalIdeationWithPlan.present === null)) {
         mensaje = 'Por favor, responda todas las preguntas de Ideación Suicida antes de continuar.';
       }
+      // Si hay ideación (pregunta 1 o 2 positiva) y faltan datos de intensidad
+      else if (this.showIntensitySection && 
+               (!this.assessment.ideationIntensity.mostSeriousIdeationType ||
+                !this.assessment.ideationIntensity.mostSeriousIdeationDescription ||
+                this.assessment.ideationIntensity.frequency === null)) {
+        mensaje = 'Por favor, complete la sección de Intensidad de la Ideación.';
+      }
       // Si no es comportamiento suicida y faltan preguntas de ideación
       else if (!this.canShowBehaviorSection && 
                this.assessment.nonSpecificActiveSuicidalThoughts.present === false && 
@@ -680,124 +785,60 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
 .assessment-form {
+  font-family: 'Poppins', sans-serif;
   padding: 1rem;
 }
 
-.validation-message {
-  background-color: #fff3cd;
-  color: #856404;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+.modal-header {
+  background: #7F53AC;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-window {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #f8f9fa;
 }
 
 .assessment-section {
   margin-bottom: 2rem;
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 1rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .assessment-section h3 {
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  font-size: 1.25rem;
-}
-
-.behavior-section {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 2px solid #dee2e6;
-}
-
-.number-input {
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.number-input input {
-  width: 80px;
-  padding: 0.25rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-}
-
-.select-group {
-  margin-bottom: 1rem;
-}
-
-.select-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #495057;
-}
-
-.select-group select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.date-input {
-  margin-top: 1rem;
-}
-
-.date-input label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #495057;
-}
-
-.date-input input {
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  width: 100%;
+  color: #333;
 }
 
 .assessment-item {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding: 1rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid #e9ecef;
   border-radius: 4px;
-  background-color: #f8f9fa;
-}
-
-.assessment-item h4 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.description {
-  font-size: 0.9rem;
-  color: #6c757d;
-  margin-bottom: 1rem;
-  font-style: italic;
-}
-
-.questions {
-  margin-bottom: 1rem;
-}
-
-.questions p {
-  margin-bottom: 0.5rem;
-  color: #495057;
+  background: white;
 }
 
 .response-section {
   margin-top: 1rem;
-}
-
-.radio-group {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 1rem;
 }
 
 .radio-group label {
@@ -805,6 +846,19 @@ export default {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.radio-group label:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.radio-group input[type="radio"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #7F53AC;
 }
 
 textarea {
@@ -813,25 +867,59 @@ textarea {
   border: 1px solid #ced4da;
   border-radius: 4px;
   resize: vertical;
+  font-family: 'Poppins', sans-serif;
 }
 
 textarea:focus {
   outline: none;
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  border-color: #7F53AC;
+  box-shadow: 0 0 0 2px rgba(127, 83, 172, 0.1);
 }
 
-.modal-body {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding: 0;
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  border: none;
 }
 
-.modal-footer {
-  padding: 1rem;
-  border-top: 1px solid #dee2e6;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+.btn:hover {
+  transform: translateY(-2px);
 }
-</style>`
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background-color: #7F53AC;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #6b4593;
+}
+
+.btn-secondary {
+  background: var(--neutral-light);
+  color: var(--neutral-dark);
+}
+
+.behavior-section {
+  border: 2px solid var(--primary-color);
+  position: relative;
+}
+
+.behavior-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+</style>

@@ -60,7 +60,38 @@ const suicideAssessmentSchema = Schema({
             },
             default: false
         },
-        description: String
+        description: {
+            type: String,
+            default: ''
+        },
+        frequency: {
+            type: Number,
+            default: 0
+        }
+    },
+    // Sección de Intensidad de la Ideación
+    ideationIntensity: {
+        mostSeriousIdeationType: {
+            type: Number,
+            min: 1,
+            max: 5,
+            required: function() {
+                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+            }
+        },
+        mostSeriousIdeationDescription: {
+            type: String,
+            required: function() {
+                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+            }
+        },
+        frequency: {
+            type: Number,
+            enum: [0, 1, 2, 3, 4], // 0: No sabe/No corresponde, 1: Solo una vez, 2: Unas pocas veces, 3: Muchas, 4: Todo el tiempo
+            required: function() {
+                return this.deathWish.present === true || this.nonSpecificActiveSuicidalThoughts.present === true;
+            }
+        }
     },
     riskLevel: {
         type: String,
