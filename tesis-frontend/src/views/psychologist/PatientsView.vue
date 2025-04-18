@@ -485,32 +485,28 @@ export default {
             'Content-Type': 'application/json',
             'x-token': token
           },
-          data: JSON.stringify(dataToSend)
+          data: dataToSend
         })
 
         const data = response.data
 
-        if (response.status === 200) {
+        if (response.status === 201 || response.status === 200) {
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: this.selectedStudent ? 'Estudiante actualizado correctamente' : 'Estudiante creado correctamente'
+            text: data.msg || (this.selectedStudent ? 'Estudiante actualizado correctamente' : 'Estudiante creado correctamente')
           })
           this.closeModal()
           await this.fetchUsers()
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.errors?.[0]?.msg || 'Error al procesar la solicitud'
-          })
+          throw new Error(data.msg || 'Error al procesar la solicitud')
         }
       } catch (error) {
         console.error('Error:', error)
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Error al procesar la solicitud'
+          text: error.response?.data?.msg || error.message || 'Error al procesar la solicitud'
         })
       }
     },

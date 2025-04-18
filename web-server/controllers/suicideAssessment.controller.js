@@ -172,6 +172,30 @@ const getStatistics = async (req, res = response) => {
             console.log('Estudiantes sin género asignado:', studentsWithoutGender);
         }
 
+        // Obtener conteo por carrera
+        const careerStats = await SuicideAssessment.aggregate([
+            {
+                $lookup: {
+                    from: 'students',
+                    localField: 'student',
+                    foreignField: '_id',
+                    as: 'studentData'
+                }
+            },
+            { $unwind: '$studentData' },
+            {
+                $group: {
+                    _id: '$studentData.career',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
+        console.log('Estadísticas por carrera:', careerStats);
+
         // Obtener total de evaluaciones
         const total = await SuicideAssessment.countDocuments();
 
@@ -180,7 +204,8 @@ const getStatistics = async (req, res = response) => {
             statistics: {
                 total,
                 riskLevels,
-                genderStats
+                genderStats,
+                careerStats
             }
         });
 
