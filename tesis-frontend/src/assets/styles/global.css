@@ -10,6 +10,15 @@
 html {
   font-size: 16px;
   height: 100%;
+  -webkit-text-size-adjust: 100%;
+
+  @media (max-width: 768px) {
+    font-size: 15px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 }
 
 body {
@@ -52,6 +61,10 @@ a:hover {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-md);
+
+  @media (max-width: 768px) {
+    padding: 0 var(--spacing-sm);
+  }
 }
 
 .content-wrapper {
@@ -72,6 +85,16 @@ input, select, textarea {
   color: var(--neutral-dark);
   background-color: var(--bg-primary);
   transition: all var(--transition-normal);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  @media (max-width: 480px) {
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+  }
 }
 
 input:focus, select:focus, textarea:focus {
@@ -100,6 +123,16 @@ input::placeholder {
   transition: all var(--transition-normal);
   background: var(--primary-gradient);
   color: white;
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: var(--spacing-sm);
+  }
 }
 
 .btn:hover {
@@ -201,14 +234,30 @@ table {
   margin: var(--spacing-md) 0;
   background: var(--bg-primary);
   border-radius: var(--border-radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  display: block;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-sm);
+
+  @media (max-width: 768px) {
+    font-size: var(--font-size-sm);
+    margin: var(--spacing-sm) 0;
+  }
 }
 
 th, td {
   padding: var(--spacing-md);
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-sm);
+  }
+
+  @media (max-width: 480px) {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-width: 120px;
+  }
 }
 
 th {
@@ -229,6 +278,16 @@ tr:hover {
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+  }
+
+  @media (max-width: 480px) {
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
 }
 
 .card:hover {

@@ -63,11 +63,23 @@ export default {
 /* Sección hero con gradiente y estilo llamativo */
 .hero {
   text-align: center;
-  padding: 60px 20px;
+  padding: 6rem 2rem;
   background: linear-gradient(135deg, #42b983 0%, #3aa876 100%);
   color: white;
   border-radius: 8px;
   margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 3rem 1rem;
+  }
 }
 
 .hero h1 {
@@ -75,27 +87,51 @@ export default {
   margin-bottom: 20px;
 }
 
-.subtitle {
-  font-size: 1.2em;
-  opacity: 0.9;
+.home-view {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  font-family: var(--font-family);
+  overflow-x: hidden;
 }
 
 /* Grid responsivo para las características */
-.features {
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  margin: 40px 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 
 /* Tarjetas de características con efectos hover */
 .feature-card {
   background: white;
-  padding: 30px;
+  padding: 6rem 2rem;
   border-radius: 8px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .feature-card {
+    padding: 4rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .feature-card {
+    padding: 3rem 1rem;
+  }
 }
 
 .feature-card:hover {

@@ -586,6 +586,10 @@ export default {
   padding: 2rem;
   background-color: #f8f9fa;
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .page-header {
@@ -647,7 +651,17 @@ export default {
 .users-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .user-card {
@@ -734,7 +748,7 @@ export default {
   padding: 0.8rem;
   border: none;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -777,11 +791,23 @@ export default {
 
 .modal-content {
   background: white;
-  border-radius: 15px;
-  width: 90%;
+  padding: 2rem;
+  border-radius: var(--border-radius-lg);
   max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 90%;
+  position: relative;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.25rem;
+    width: 100%;
+    margin: 0 1rem;
+    border-radius: var(--border-radius-md);
+  }
 }
 
 .modal-header {
@@ -812,6 +838,37 @@ export default {
 
 .form-group {
   margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+
+    @media (max-width: 480px) {
+      padding: 0.5rem;
+      font-size: 0.95rem;
+    }
+  }
 }
 
 .form-group label {

@@ -257,17 +257,30 @@ defineExpose({
 </script>
 
 <style scoped>
-.statistics-container {
+.statistics-view {
   padding: 2rem;
+  font-family: var(--font-family);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
-.charts-container {
-  margin-top: 2rem;
-}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
 
-.chart-title {
-  text-align: center;
-  margin-bottom: 1rem;
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .chart-wrapper {
@@ -280,11 +293,48 @@ defineExpose({
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+  }
+}
+
 .chart-wrapper h3 {
   text-align: center;
   margin-bottom: 1rem;
   color: #2c3e50;
   font-size: 1.25rem;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 
 .spinner-border {

@@ -146,7 +146,13 @@ export default {
   display: flex;
   flex-direction: column;
   position: fixed;
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
 }
 
 .sidebar-header {
@@ -226,12 +232,11 @@ export default {
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 240px;
+    width: 280px;
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
   }
 
-  .sidebar.show {
+  .sidebar.mobile-open {
     transform: translateX(0);
   }
 
@@ -241,6 +246,14 @@ export default {
 
   .user-info p {
     font-size: 0.8rem;
+  }
+
+  .sidebar-nav {
+    padding: 1rem;
+  }
+
+  .sidebar-footer {
+    padding: 1rem;
   }
 }
 </style>

@@ -209,6 +209,7 @@ export default {
 /* Vista principal con fondo y centrado */
 .login-view {
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,6 +218,7 @@ export default {
   position: relative;
   overflow: hidden;
   z-index: 1;
+  padding: 1rem;
 }
 
 .login-container {
@@ -225,6 +227,11 @@ export default {
   max-width: 440px;
   z-index: 2;
   pointer-events: auto;
+  margin: auto;
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+  }
 }
 
 .login-card {
@@ -235,6 +242,11 @@ export default {
   transform: translateY(0);
   transition: all 0.3s ease;
   position: relative;
+
+  @media (max-width: 480px) {
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+  }
 }
 
 .login-card.loading {
@@ -248,19 +260,43 @@ export default {
 
 .logo-container {
   margin-bottom: 1.5rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+  }
+
+  input {
+    @media (max-width: 480px) {
+      font-size: 1rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
 }
 
 .logo-circle {
   width: 80px;
   height: 80px;
-  margin: 0 auto;
   background: var(--primary-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
-  animation: pulse 2s infinite;
+  margin: 0 auto 1rem;
+
+  @media (max-width: 480px) {
+    width: 60px;
+    height: 60px;
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
 }
 
 .logo-circle i {
@@ -331,21 +367,29 @@ export default {
 }
 
 .submit-btn {
+  width: 100%;
+  padding: 0.8rem;
   background: var(--primary-gradient);
   color: white;
-  padding: 1rem;
   border: none;
   border-radius: var(--border-radius-md);
   font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  @media (max-width: 480px) {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -430,11 +474,15 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  right: 0;
+  bottom: 0;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
+
+  @media (max-width: 480px) {
+    opacity: 0.5;
+  }
 }
 
 .shape {
