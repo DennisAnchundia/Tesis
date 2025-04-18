@@ -2,6 +2,13 @@ const { response } = require('express');
 const SuicideAssessment = require('../models/suicideAssessment');
 const Student = require('../models/student');
 
+// Constantes para niveles de riesgo
+const RISK_LEVELS = {
+    LOW: 'Bajo',
+    MEDIUM: 'Medio',
+    HIGH: 'Alto'
+};
+
 const createAssessment = async (req, res = response) => {
     try {
         const { studentId, ...assessmentData } = req.body;
@@ -47,23 +54,14 @@ const createAssessment = async (req, res = response) => {
 
 const getAssessments = async (req, res = response) => {
     try {
-        const studentId = req.query.studentId;
-        let query = {};
-
-        if (studentId) {
-            query.student = studentId;
-        }
-
-        const assessments = await SuicideAssessment.find(query)
-            .populate('student', 'firstName lastName')
-            .populate('psychologist', 'firstName lastName')
-            .sort({ date: -1 });
+        const assessments = await SuicideAssessment.find()
+            .populate('student', 'name')
+            .populate('psychologist', 'name');
 
         res.json({
             ok: true,
             assessments
         });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -74,11 +72,12 @@ const getAssessments = async (req, res = response) => {
 };
 
 const getAssessmentById = async (req, res = response) => {
+    const id = req.params.id;
+
     try {
-        const id = req.params.id;
         const assessment = await SuicideAssessment.findById(id)
-            .populate('student', 'firstName lastName')
-            .populate('psychologist', 'firstName lastName');
+            .populate('student')
+            .populate('psychologist', 'name');
 
         if (!assessment) {
             return res.status(404).json({
@@ -91,7 +90,6 @@ const getAssessmentById = async (req, res = response) => {
             ok: true,
             assessment
         });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -103,48 +101,39 @@ const getAssessmentById = async (req, res = response) => {
 
 const getStatistics = async (req, res = response) => {
     try {
-        // Estadísticas generales
-        const totalAssessments = await SuicideAssessment.countDocuments();
-        const riskLevelStats = await SuicideAssessment.aggregate([
+        // Obtener conteo por nivel de riesgo
+        const riskLevels = await SuicideAssessment.aggregate([
             {
                 $group: {
                     _id: '$riskLevel',
                     count: { $sum: 1 }
                 }
+            },
+            {
+                $sort: { _id: 1 }
             }
         ]);
 
-        // Tendencias por mes
-        const monthlyStats = await SuicideAssessment.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: '$date' },
-                        month: { $month: '$date' }
-                    },
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { '_id.year': 1, '_id.month': 1 } }
-        ]);
+        // Obtener total de evaluaciones
+        const total = await SuicideAssessment.countDocuments();
 
-        res.json({
+        return res.json({
             ok: true,
             statistics: {
-                total: totalAssessments,
-                riskLevels: riskLevelStats,
-                monthly: monthlyStats
+                total,
+                riskLevels
             }
         });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({
+        return res.status(500).json({
             ok: false,
             msg: 'Error inesperado'
         });
     }
 };
+
 
 module.exports = {
     createAssessment,

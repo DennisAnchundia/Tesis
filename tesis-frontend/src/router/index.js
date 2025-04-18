@@ -79,6 +79,11 @@ const routes = [
         path: 'patients/:id/edit',
         name: 'edit-student',
         component: EditStudentView
+      },
+      {
+        path: 'statistics',
+        name: 'psychologist-statistics',
+        component: () => import('../views/psychologist/StatisticsView.vue')
       }
     ]
   },

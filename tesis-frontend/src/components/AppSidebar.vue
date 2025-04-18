@@ -46,6 +46,11 @@
           icon="fas fa-users"
           text="Mis Pacientes"
         />
+        <SidebarLink
+          to="/psychologist/dashboard/statistics"
+          icon="fas fa-chart-bar"
+          text="Estadísticas"
+        />
       </template>
     </nav>
 

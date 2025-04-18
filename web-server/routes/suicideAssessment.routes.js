@@ -27,6 +27,9 @@ router.post('/', [
     validateFields
 ], createAssessment);
 
+// Obtener estadísticas detalladas
+router.get('/statistics', getStatistics);
+
 // Obtener todas las evaluaciones
 router.get('/', getAssessments);
 
@@ -35,8 +38,5 @@ router.get('/:id', [
     check('id', 'El ID no es válido').isMongoId(),
     validateFields
 ], getAssessmentById);
-
-// Obtener estadísticas
-router.get('/statistics/general', getStatistics);
 
 module.exports = router;
