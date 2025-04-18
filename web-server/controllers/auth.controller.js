@@ -3,6 +3,30 @@ const User  = require('../models/user');
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require('../helpers/generate-jwt');
 
+const validateToken = async (req = request, res = response) => {
+    try {
+        // El usuario ya está validado por el middleware validateJWT
+        const user = req.user;
+
+        res.json({
+            ok: true,
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.log('Error en validateToken:', error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error en el servidor'
+        });
+    }
+}
+
 const login = async (req, res= response) => {
 
     const { email, password } = req.body;
@@ -48,4 +72,4 @@ const login = async (req, res= response) => {
     }
 }
 
-module.exports = { login }
+module.exports = { login, validateToken }

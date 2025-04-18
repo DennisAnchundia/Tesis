@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
-import AuthenticatedHome from '../views/AuthenticatedHome.vue'
 import PatientsView from '../views/psychologist/PatientsView.vue'
 import StudentDetailsView from '../views/psychologist/StudentDetailsView.vue'
 import EditStudentView from '../views/psychologist/EditStudentView.vue'
@@ -27,8 +26,7 @@ const routes = [
   // Rutas del Admin
   {
     path: '/home',
-    name: 'authenticated-home',
-    component: AuthenticatedHome,
+    redirect: '/dashboard/home',
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
@@ -37,6 +35,15 @@ const routes = [
     component: () => import('../views/DashboardView.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
+      {
+        path: 'home',
+        name: 'admin-home',
+        component: () => import('../views/AdminHomeView.vue')
+      },
+      {
+        path: '',
+        redirect: { name: 'admin-home' }
+      },
       {
         path: 'profile',
         name: 'admin-profile',
