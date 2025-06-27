@@ -51,6 +51,16 @@
           icon="fas fa-chart-bar"
           text="Estadísticas"
         />
+        <SidebarLink
+          to="/psychologist/dashboard/report"
+          icon="fas fa-chart-bar"
+          text="Reportes"
+        />
+        <SidebarLink
+          to="/psychologist/dashboard/history"
+          icon="fas fa-chart-bar"
+          text="Historial"
+        />
       </template>
     </nav>
 

@@ -1,4 +1,4 @@
-`<template>
+<template>
   <div class="modal-backdrop">
     <div class="modal-window">
       <div class="modal-header">
@@ -550,17 +550,39 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="$emit('close')">Cancelar</button>
-        <button class="btn btn-primary" @click="submitAssessment">Guardar Evaluación</button>
-      </div>
+      <!-- Observaciones Finales -->
+<!-- Observaciones Finales -->
+<div v-if="isAssessmentSaved" class="final-remarks-container" ref="finalRemarksSection">
+  <h2 class="final-remarks-title">Observaciones posteriores a la evaluación</h2>
+
+  <textarea
+    v-model="assessment.finalRemarks"
+    rows="7"
+    class="final-remarks-textarea"
+    placeholder="Ingrese observaciones posteriores a la evaluación..."
+  ></textarea>
+
+  <div class="button-group">
+    <button
+      class="btn btn-success"
+      @click="submitFinalRemarks"
+      :disabled="remarksLoading"
+    >
+      {{ remarksLoading ? 'Guardando...' : 'Guardar Observaciones' }}
+    </button>
+    <button class="btn btn-secondary ml-3" @click="$emit('close')">Cerrar</button>
+  </div>
+</div>
+  <div class="modal-footer" v-if="!isAssessmentSaved">
+  <button class="btn btn-secondary" @click="$emit('close')">Cancelar</button>
+  <button class="btn btn-primary" @click="submitAssessment" :disabled="isAssessmentSaved">Guardar Evaluación</button>
+</div>
     </div>
   </div>
 </template>
-
 <script>
-import axios from 'axios'
-import Swal from 'sweetalert2'
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   name: 'SuicideAssessmentForm',
@@ -572,217 +594,183 @@ export default {
   },
   data() {
     return {
+      isAssessmentSaved: false,
+      showFinalRemarks: false,
+      savedAssessmentId: null,
+      remarksLoading: false,
       today: new Date().toISOString().split('T')[0],
       assessment: {
         studentId: this.studentId,
-        deathWish: {
-          present: null,
-          description: ''
-        },
-        nonSpecificActiveSuicidalThoughts: {
-          present: null,
-          description: ''
-        },
-        activeSuicidalIdeationWithMethods: {
-          present: null,
-          description: ''
-        },
-        activeSuicidalIdeationWithIntent: {
-          present: null,
-          description: ''
-        },
-        activeSuicidalIdeationWithPlan: {
-          present: null,
-          description: ''
-        },
+        // Ideación Suicida
+        deathWish: { present: null, description: '' },
+        nonSpecificActiveSuicidalThoughts: { present: null, description: '' },
+        activeSuicidalIdeationWithMethods: { present: null, description: '' },
+        activeSuicidalIdeationWithIntent: { present: null, description: '' },
+        activeSuicidalIdeationWithPlan: { present: null, description: '' },
         ideationIntensity: {
           mostSeriousIdeationType: '',
           mostSeriousIdeationDescription: '',
           frequency: null
         },
-        observations: '',
         // Comportamiento Suicida
-        actualAttempt: {
-          present: null,
-          description: '',
-          totalAttempts: 0
-        },
-        nonSuicidalSelfInjury: {
-          present: null,
-          description: ''
-        },
-        unknownIntentSelfInjury: {
-          present: null,
-          description: ''
-        },
-        interruptedAttempt: {
-          present: null,
-          description: '',
-          totalAttempts: 0
-        },
-        abortedAttempt: {
-          present: null,
-          description: '',
-          totalAttempts: 0
-        },
-        preparatoryActs: {
-          present: null,
-          description: ''
-        },
+        actualAttempt: { present: false, description: '', totalAttempts: 0 },
+        nonSuicidalSelfInjury: { present: false, description: '' },
+        unknownIntentSelfInjury: { present: null, description: '' },
+        interruptedAttempt: { present: null, description: '', totalAttempts: 0 },
+        abortedAttempt: { present: null, description: '', totalAttempts: 0 },
+        preparatoryActs: { present: null, description: '' },
         completedSuicide: false,
         mostLethalAttemptDate: '',
         lethalityDegree: 0,
-        potentialLethality: 0
+        potentialLethality: 0,
+        observations: '',
+        finalRemarks: ''
       }
-    }
+    };
   },
   computed: {
-    // Mostrar preguntas adicionales solo si la pregunta 2 es positiva
-    showAdditionalIdeation() {
-      return this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
-    },
-    showIntensitySection() {
-      // Mostrar si la pregunta 1 o 2 son positivas
-      return this.assessment.deathWish.present === true || 
-             this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
-    },
-    canShowBehaviorSection() {
-      // Solo mostrar la sección de comportamiento si ambas preguntas son negativas
-      return this.assessment.deathWish.present === false && 
-             this.assessment.nonSpecificActiveSuicidalThoughts.present === false;
-    },
-    shouldSkipValidation() {
-      // Si ambas son negativas, no se requiere validación
-      return this.assessment.deathWish.present === false && 
-             this.assessment.nonSpecificActiveSuicidalThoughts.present === false;
-    }
+  showAdditionalIdeation() {
+    return this.assessment.nonSpecificActiveSuicidalThoughts.present === true;
   },
+  showIntensitySection() {
+    return (
+      this.assessment.deathWish.present === true ||
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === true
+    );
+  },
+  canShowBehaviorSection() {
+    return (
+      this.assessment.deathWish.present === false &&
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === false
+    );
+  },
+  shouldSkipBehavior() {
+    return (
+      this.assessment.deathWish.present === false &&
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === false
+    );
+  }
+},
   watch: {
-    shouldSkipValidation(skip) {
-      if (skip) {
-        // Si no hay ideación suicida, establecer todos los campos de comportamiento en false
-        this.assessment.actualAttempt.present = false;
-        this.assessment.nonSuicidalSelfInjury.present = false;
-        this.assessment.unknownIntentSelfInjury.present = false;
-        this.assessment.interruptedAttempt.present = false;
-        this.assessment.abortedAttempt.present = false;
-        this.assessment.preparatoryActs.present = false;
-      }
-    },
-    'assessment.deathWish.present'() {
-      this.checkIdeation();
-    },
-    'assessment.nonSpecificActiveSuicidalThoughts.present'() {
-      this.checkIdeation();
+  'assessment.deathWish.present'(newVal, oldVal) {
+    this.checkIdeation();
+    // Solo resetear si cambió de true/null a false
+    if ((oldVal === true || oldVal === null) && newVal === false) {
+      this.conditionalResetBehavior();
     }
   },
-  methods: {
-    checkIdeation() {
-      // Si la pregunta 2 es negativa, establecer las preguntas 3-5 en false
-      if (!this.assessment.nonSpecificActiveSuicidalThoughts.present) {
-        this.assessment.activeSuicidalIdeationWithMethods.present = false;
-        this.assessment.activeSuicidalIdeationWithMethods.description = '';
-        this.assessment.activeSuicidalIdeationWithIntent.present = false;
-        this.assessment.activeSuicidalIdeationWithIntent.description = '';
-        this.assessment.activeSuicidalIdeationWithPlan.present = false;
-        this.assessment.activeSuicidalIdeationWithPlan.description = '';
-      }
-
-      // Si ambas respuestas son negativas, establecer valores por defecto para comportamiento
-      if (this.assessment.deathWish.present === false && 
-          this.assessment.nonSpecificActiveSuicidalThoughts.present === false) {
-        this.assessment.actualAttempt.present = false;
-        this.assessment.nonSuicidalSelfInjury.present = false;
-        this.assessment.unknownIntentSelfInjury.present = false;
-        this.assessment.interruptedAttempt.present = false;
-        this.assessment.abortedAttempt.present = false;
-        this.assessment.preparatoryActs.present = false;
-      }
-    },
-    async submitAssessment() {
-      // Validar que se hayan respondido todas las preguntas necesarias
-      let mensaje = '';
-      
-      // Si las preguntas 1 y 2 no están respondidas
-      if (this.assessment.deathWish.present === null || 
-          this.assessment.nonSpecificActiveSuicidalThoughts.present === null) {
-        mensaje = 'Por favor, responda las preguntas 1 y 2 de Ideación Suicida antes de continuar.';
-      }
-      // Si la pregunta 2 es positiva y faltan preguntas 3,4,5
-      else if (this.assessment.nonSpecificActiveSuicidalThoughts.present === true && 
-               (this.assessment.activeSuicidalIdeationWithMethods.present === null ||
-                this.assessment.activeSuicidalIdeationWithIntent.present === null ||
-                this.assessment.activeSuicidalIdeationWithPlan.present === null)) {
-        mensaje = 'Por favor, responda todas las preguntas de Ideación Suicida antes de continuar.';
-      }
-      // Si hay ideación (pregunta 1 o 2 positiva) y faltan datos de intensidad
-      else if (this.showIntensitySection && 
-               (!this.assessment.ideationIntensity.mostSeriousIdeationType ||
-                !this.assessment.ideationIntensity.mostSeriousIdeationDescription ||
-                this.assessment.ideationIntensity.frequency === null)) {
-        mensaje = 'Por favor, complete la sección de Intensidad de la Ideación.';
-      }
-      // Si no es comportamiento suicida y faltan preguntas de ideación
-      else if (!this.canShowBehaviorSection && 
-               this.assessment.nonSpecificActiveSuicidalThoughts.present === false && 
-               this.assessment.deathWish.present === true) {
-        mensaje = 'Por favor, complete la evaluación de Ideación Suicida.';
-      }
-
-      if (mensaje) {
-        await Swal.fire({
-          icon: 'warning',
-          title: 'Validación',
-          text: mensaje
-        });
-        return;
-      }
-
-      // Si las preguntas 1 y 2 son negativas, no se requiere validación adicional
-      if (this.shouldSkipValidation) {
-        this.assessment.actualAttempt.present = false;
-        this.assessment.nonSuicidalSelfInjury.present = false;
-        this.assessment.unknownIntentSelfInjury.present = false;
-        this.assessment.interruptedAttempt.present = false;
-        this.assessment.abortedAttempt.present = false;
-        this.assessment.preparatoryActs.present = false;
-      }
-      try {
-        const token = localStorage.getItem('x-token')
-        const response = await axios.post(
-          'http://localhost:3000/api/suicide-assessments',
-          {
-            studentId: this.studentId,
-            ...this.assessment
-          },
-          {
-            headers: {
-              'x-token': token
-            }
-          }
-        )
-
-        if (response.data.ok) {
-          await Swal.fire({
-            icon: 'success',
-            title: 'Evaluación Guardada',
-            text: 'La evaluación ha sido registrada exitosamente'
-          })
-          this.$emit('assessment-created', response.data.assessment)
-          this.$emit('close')
-        }
-      } catch (error) {
-        console.error('Error:', error)
-        await Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.response?.data?.msg || 'Error al guardar la evaluación'
-        })
-      }
+  'assessment.nonSpecificActiveSuicidalThoughts.present'(newVal, oldVal) {
+    this.checkIdeation();
+    // Solo resetear si cambió de true/null a false
+    if ((oldVal === true || oldVal === null) && newVal === false) {
+      this.conditionalResetBehavior();
     }
   }
+},
+methods: {
+  checkIdeation() {
+    if (!this.assessment.nonSpecificActiveSuicidalThoughts.present) {
+      this.assessment.activeSuicidalIdeationWithMethods = { present: false, description: '' };
+      this.assessment.activeSuicidalIdeationWithIntent = { present: false, description: '' };
+      this.assessment.activeSuicidalIdeationWithPlan = { present: false, description: '' };
+    }
+  },
+
+  conditionalResetBehavior() {
+    // Solo resetear si ambas preguntas son false
+    if (
+      this.assessment.deathWish.present === false &&
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === false
+    ) {
+      this.resetBehaviorFields();
+    }
+  },
+
+  resetBehaviorFields() {
+    this.assessment.actualAttempt = { present: false, description: '', totalAttempts: 0 };
+    this.assessment.nonSuicidalSelfInjury = { present: false, description: '' };
+    this.assessment.unknownIntentSelfInjury = { present: false, description: '' };
+    this.assessment.interruptedAttempt = { present: false, description: '', totalAttempts: 0 };
+    this.assessment.abortedAttempt = { present: false, description: '', totalAttempts: 0 };
+    this.assessment.preparatoryActs = { present: false, description: '' };
+  },
+
+  async submitAssessment() {
+    let mensaje = '';
+
+    if (
+      this.assessment.deathWish.present === null ||
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === null
+    ) {
+      mensaje = 'Por favor, responda las preguntas 1 y 2 de Ideación Suicida.';
+    } else if (
+      this.assessment.nonSpecificActiveSuicidalThoughts.present === true &&
+      (
+        this.assessment.activeSuicidalIdeationWithMethods.present === null ||
+        this.assessment.activeSuicidalIdeationWithIntent.present === null ||
+        this.assessment.activeSuicidalIdeationWithPlan.present === null
+      )
+    ) {
+      mensaje = 'Por favor, complete todas las preguntas de Ideación Suicida.';
+    } else if (
+      this.showIntensitySection &&
+      (
+        !this.assessment.ideationIntensity.mostSeriousIdeationType ||
+        !this.assessment.ideationIntensity.mostSeriousIdeationDescription ||
+        this.assessment.ideationIntensity.frequency === null
+      )
+    ) {
+      mensaje = 'Por favor, complete la sección de Intensidad de la Ideación.';
+    }
+
+    if (mensaje) {
+      await Swal.fire({ icon: 'warning', title: 'Validación', text: mensaje });
+      return;
+    }
+
+    // REMOVER ESTA LÍNEA - no resetear antes de guardar
+    // if (this.shouldSkipValidation) {
+    //   this.resetBehaviorFields();
+    // }
+
+    try {
+      const token = localStorage.getItem('x-token');
+      const response = await axios.post(
+        'http://localhost:3000/api/suicide-assessments',
+        { studentId: this.studentId, ...this.assessment },
+        { headers: { 'x-token': token } }
+      );
+
+      if (response.data.ok) {
+        this.savedAssessmentId = response.data.assessment._id;
+        this.isAssessmentSaved = true;
+        this.showFinalRemarks = true;
+        this.$nextTick(() => {
+          const section = this.$refs.finalRemarksSection;
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+        await Swal.fire({
+          icon: 'success',
+          title: 'Evaluación Guardada',
+          text: 'La evaluación ha sido registrada exitosamente'
+        });
+
+        this.$emit('assessment-created', response.data.assessment);
+      }
+    } catch (error) {
+      console.error(error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.msg || 'Error al guardar la evaluación'
+      });
+    }
+  }}
 }
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
@@ -922,4 +910,92 @@ textarea:focus {
   height: 4px;
   background: var(--primary-gradient);
 }
+.final-remarks-container {
+  max-width: 700px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.final-remarks-title {
+  font-size: 24px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.final-remarks-textarea {
+  width: 100%;
+  height: 180px;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: vertical;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.save-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #1a242f;
+}
+.final-remarks-container {
+  max-width: 700px;
+  margin: 50px auto;
+  text-align: center;
+  padding: 30px;
+  background-color: #f5f9ff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.final-remarks-title {
+  font-size: 26px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.final-remarks-textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: vertical;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.remarks-saved-message {
+  margin-top: 15px;
+  color: #2c7be5;
+  font-weight: 500;
+}
+
 </style>

@@ -73,6 +73,16 @@ const routes = [
         component: () => import('../views/psychologist/ProfileView.vue')
       },
       {
+        path: 'report',
+        name: 'report-pdf',
+        component: () => import('../views/psychologist/ReportPDF.vue')
+      },
+      {
+        path: 'history',
+        name: 'history',
+        component: () => import('../views/psychologist/HistoryStudent.vue')
+      },
+      {
         path: 'patients',
         name: 'psychologist-patients',
         component: PatientsView

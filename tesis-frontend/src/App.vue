@@ -1,12 +1,4 @@
-<!--
-Componente App (Raíz)
 
-Este es el componente raíz de la aplicación que sirve como punto de entrada principal.
-Contiene:
-- Configuración global de estilos y variables CSS
-- Router view para renderizar las diferentes vistas
-- Estilos base y normalización para toda la aplicación
--->
 
 <template>
   <!-- Contenedor principal de la aplicación -->
@@ -28,7 +20,7 @@ export default {
 
 <style>
 /* Importación de la fuente Poppins de Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 
 /* Variables CSS globales para toda la aplicación */
 :root {
@@ -90,7 +82,9 @@ body {
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
+}
+main {
+  background-color: #eff6ff;
 }
 
 /* Contenedor principal de la aplicación
@@ -104,6 +98,7 @@ body {
 
 .router-view {
   flex: 1;
+  
 }
 
 /* Estilos base para enlaces

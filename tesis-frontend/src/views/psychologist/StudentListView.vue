@@ -11,6 +11,8 @@ Características principales:
 -->
 
 <template>
+
+  
   <div class="student-list">
     <PageHeader
       title="Lista de Estudiantes"
@@ -142,6 +144,7 @@ Características principales:
       </div>
     </div>
   </div>
+  
 </template>
 
 <script>

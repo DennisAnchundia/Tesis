@@ -17,7 +17,7 @@ Características:
         <div class="avatar" :style="{ backgroundColor: avatarColor }">
           <span>{{ userInitials }}</span>
         </div>
-        <h1>Bienvenido, {{ userName }}</h1>
+        <h1>Bienvenssssssssssido, {{ userName }}</h1>
       </div>
       
       <div class="info-section">

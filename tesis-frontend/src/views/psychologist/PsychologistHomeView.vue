@@ -1,383 +1,248 @@
-<!--
-Componente PsychologistHomeView
-
-Este componente representa el panel principal para los psicólogos del sistema.
-Muestra un resumen de sus estadísticas, acciones rápidas y actividad reciente.
-Permite acceder a las principales funcionalidades relacionadas con la gestión de estudiantes y evaluaciones.
--->
-
 <template>
-  <div class="psychologist-home">
-    <!-- Encabezado de la página con título y subtítulo -->
-    <PageHeader
-      title="Panel del Psicólogo"
-      subtitle="Bienvenido a tu espacio de trabajo"
-    />
-
-    <!-- Panel de estadísticas rápidas que muestra información clave para el psicólogo -->
-    <div class="stats-overview">
-      <div class="stat-card">
-        <i class="fas fa-user-graduate stat-icon"></i>
-        <div class="stat-info">
-          <h3>Estudiantes Asignados</h3>
-          <p class="stat-value">32</p>
+  <div class=" ">
+    <div class="py-16 sm:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2 class="text-3xl font-semibold text-dark tracking-tight sm:text-4xl">
+            Bienvenido a Mindex
+          </h2>
+          <p class="mt-4 text-lg text-gray-800">
+            Aplicativo web para la gestión de evaluación Columbia mediante un dashboard intuitivo
+            para el manejo de estudiantes, estadísticas y reportes.
+          </p>
         </div>
-      </div>
-
-      <div class="stat-card">
-        <i class="fas fa-calendar-check stat-icon"></i>
-        <div class="stat-info">
-          <h3>Sesiones este mes</h3>
-          <p class="stat-value">12</p>
+        <div class="mt-16 text-center">
+          <h2 class="text-2xl font-semibold text-dark tracking-tight">
+            Opciones dentro de la plataforma
+          </h2>
+          <p class="mt-2 text-lg text-gray-800">
+            Explora las diversas funcionalidades que Mindex tiene para ofrecer.
+          </p>
         </div>
-      </div>
-
-      <div class="stat-card">
-        <i class="fas fa-clipboard-list stat-icon"></i>
-        <div class="stat-info">
-          <h3>Evaluaciones Pendientes</h3>
-          <p class="stat-value">8</p>
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 justify-items-center">
+      
+          <div class="bg-white rounded-xl shadow-md overflow-hidden max-w-xs sm:max-w-sm w-full
+                      transition-all duration-300 ease-in-out
+                      hover:scale-105 hover:shadow-xl cursor-pointer">
+            <img class="w-full h-40 object-cover" src="./report.jpg" alt="Reportes Precisos">
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Reportes Precisos</h3>
+              <p class="text-gray-700 text-base mb-4">
+                Acceso a los reportes generados por el psicólogo con sus respectivos campos y
+                datos.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#reportes</span>
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#datos</span>
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#estadísticas</span>
+              </div>
+            </div>
+          </div>
+    
+          <div class="bg-white rounded-xl shadow-md overflow-hidden max-w-xs sm:max-w-sm w-full
+                      transition-all duration-300 ease-in-out
+                      hover:scale-105 hover:shadow-xl cursor-pointer">
+            <img class="w-full h-40 object-cover" src="./eval.webp" alt="Evaluacion Columbia">
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Evaluacion Columbia</h3>
+              <p class="text-gray-700 text-base mb-4">
+                Realización completa de la evaluación Columbia con todos sus campos.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#evaluación</span>
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#columbia</span>
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#resultados</span>
+              </div>
+            </div>
+          </div>
         </div>
+    
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 justify-items-center">
+          
+          <div class="bg-white rounded-xl shadow-md overflow-hidden max-w-xs sm:max-w-sm w-full
+                      transition-all duration-300 ease-in-out
+                      hover:scale-105 hover:shadow-xl cursor-pointer">
+            <img class="w-full h-40 object-cover" src="./Register.png" alt="Registrar Estudiantes">
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Registrar Estudiantes</h3>
+              <p class="text-gray-700 text-base mb-4">
+                Capacidad de ingresar estudiantes individualmente y por lote.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#Registro</span>
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#datos</span>
+                <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#Lote</span>
+              </div>
+            </div>
+          </div>
+    
+          <div class="bg-white rounded-xl shadow-md overflow-hidden max-w-xs sm:max-w-sm w-full
+                      transition-all duration-300 ease-in-out
+                      hover:scale-105 hover:shadow-xl cursor-pointer">
+            <img class="w-full h-40 object-cover" src="./informa.webp" alt="Informacion Intuitiva">
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Informacion Intuitiva</h3>
+              <p class="text-gray-700 text-base mb-4">
+                Informacion detallada y exacta de cada estudiante.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#Estudiantes</span>
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#Datos</span>
+                <span class="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">#resultados</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center">
+          <h2 class="text-3xl font-semibold text-dark tracking-tight sm:text-4xl mt-10">
+            Bienvenido a Mindex
+          </h2>
+        </div>
+
+        <div class="min-h-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+          <div class="max-w-7xl mx-auto">
+
+    
+            <div classname="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div class="bg-white rounded-2xl mb-4 shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600 mb-1">Total Estudiantes</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ totalActivos }}</p>
+                  </div>
+                  <div class="bg-green-100 p-3 rounded-full">
+                    <p class="h-8 w-8 text-green-600 text-center" > {{ totalActivos }} </p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl mb-4 shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                  <div v-if="latestStudent">
+                    <p class="text-sm font-medium text-gray-600 mb-1">Último Registro</p>
+                    <p class="text-lg font-bold text-green-600">{{ latestStudent.firstName }} {{ latestStudent.lastName}}</p>
+                    <p class="text-xs text-gray-500">{{ latestStudent.createdAt }}</p>
+                  </div>
+                  <div class="bg-green-100 p-3 rounded-full">
+                    <p class="h-8 w-8 text-green-600 text-center" >1</p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600 mb-1">Total Evaluaciones</p>
+                    <p class="text-3xl font-bold text-purple-600">{{totalEvaluaciones}}</p>
+                  </div>
+                  <div class="bg-green-100 p-3 rounded-full">
+                    <p class="h-8 w-8 text-green-600 text-center" >2</p>
+                  </div>
+                </div>
+              </div>
+            </div>
       </div>
     </div>
-
-    <div class="section-title">
-      <h2>Acciones Rápidas</h2>
-      <div class="title-line"></div>
-    </div>
-
-    <!-- Cuadrícula de acciones rápidas con tarjetas clickeables -->
-    <div class="quick-actions">
-      <ActionCard
-        icon="fas fa-user-graduate"
-        title="Lista de Estudiantes"
-        description="Ver y gestionar tus estudiantes asignados"
-        @click="$router.push('/psychologist/students')"
-      />
-
-      <ActionCard
-        icon="fas fa-clipboard-check"
-        title="Evaluaciones"
-        description="Gestionar evaluaciones y seguimientos"
-        @click="$router.push('/psychologist/evaluations')"
-      />
-
-      <ActionCard
-        icon="fas fa-user-circle"
-        title="Mi Perfil"
-        description="Actualizar información personal"
-        @click="$router.push('/psychologist/profile')"
-      />
-
-      <ActionCard
-        icon="fas fa-calendar-alt"
-        title="Calendario"
-        description="Ver y programar sesiones"
-        @click="$router.push('/psychologist/calendar')"
-      />
-    </div>
-
-    <div class="section-title">
-      <h2>Actividad Reciente</h2>
-      <div class="title-line"></div>
-    </div>
-
-    <!-- Lista de actividades recientes mostradas como tarjetas -->
-    <div class="recent-activity">
-      <div class="card activity-card">
-        <div class="activity-header">
-          <i class="fas fa-bell activity-icon"></i>
-          <span class="activity-time">Hace 2 horas</span>
-        </div>
-        <p class="activity-text">Nueva evaluación asignada para el estudiante Juan Pérez</p>
-      </div>
-
-      <div class="card activity-card">
-        <div class="activity-header">
-          <i class="fas fa-calendar-check activity-icon"></i>
-          <span class="activity-time">Ayer</span>
-        </div>
-        <p class="activity-text">Sesión completada con María González</p>
-      </div>
-
-      <div class="card activity-card">
-        <div class="activity-header">
-          <i class="fas fa-user-plus activity-icon"></i>
-          <span class="activity-time">Hace 2 días</span>
-        </div>
-        <p class="activity-text">Nuevo estudiante asignado: Carlos Rodríguez</p>
       </div>
     </div>
   </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+let totalEvaluaciones = ref(0)
+let latestStudent = ref(null)
+let totalActivos = ref(0); // Aquí guardamos la cantidad de estudiantes activos
+
+const getEvaluaciones = async () => {
+  try {
+    const token = localStorage.getItem('x-token');
+    const res = await fetch('http://localhost:3000/api/suicide-assessments',{
+      headers: {
+        'x-token': token, // Reemplaza con tu token real
+      }
+    })
+    const data = await res.json()
+
+    if (Array.isArray(data.assessments)) {
+      totalEvaluaciones.value = data.assessments.length
+    } else {
+      console.warn('La propiedad "assessments" no es un array')
+    }
+  } catch (error) {
+    console.error('Error al obtener evaluaciones:', error)
+  }
+}
+
+onMounted(() => {
+  getEvaluaciones()
+})
+const getLatestStudent = async () => {
+  try {
+    const token = localStorage.getItem('x-token');
+    const res = await fetch('http://localhost:3000/api/students/',{
+      headers: {
+        'x-token': token, // Reemplaza con tu token real
+      }
+    })
+    const responseData = await res.json()
+
+    // Accede correctamente al array de estudiantes
+    const studentList = responseData.students
+
+    if (Array.isArray(studentList)) {
+      latestStudent.value = studentList
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+    } else {
+      console.warn('students no es un array:', responseData)
+    }
+  } catch (error) {
+    console.error('Error al obtener estudiantes:', error)
+  }
+}
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleString()
+}
+
+onMounted(() => {
+  getLatestStudent()
+  setInterval(getLatestStudent, 100000) // actualiza cada 10 segundos
+})
+const obtenerEstudiantesActivos = async () => {
+  try {
+    const token = localStorage.getItem('x-token');
+    const respuesta = await axios.get('http://localhost:3000/api/students/?limit=1000&skip=0', {
+      headers: {
+        'x-token': token, // Reemplaza con tu token real
+      }
+    });
+    
+    const data = respuesta.data // ajusta esto si el array viene en otra propiedad
+    totalActivos.value = data.total
+
+  } catch (error) {
+    console.error('Error al obtener estudiantes:', error);
+  }
+};
+
+onMounted(() => {
+  obtenerEstudiantesActivos();
+});
+</script>
+
 
 <style scoped>
-.psychologist-home {
-  animation: fadeIn var(--transition-normal);
-}
-
-.stats-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-}
-
-.stat-card {
-  background: var(--bg-primary);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  background: var(--bg-secondary);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-}
-
-.stat-info h3 {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  margin-bottom: var(--spacing-xs);
-}
-
-.stat-value {
-  color: var(--text-primary);
-  font-size: 2rem;
-  font-weight: 600;
-}
-
-.section-title {
-  margin: var(--spacing-xl) 0 var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.section-title h2 {
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.title-line {
-  height: 2px;
-  background: var(--bg-secondary);
-  flex-grow: 1;
-}
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-}
-
-.recent-activity {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.activity-card {
-  background: var(--bg-primary);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-}
-
-.activity-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.activity-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-sm);
-}
-
-.activity-icon {
-  color: var(--primary-color);
-  font-size: 1.2rem;
-}
-
-.activity-time {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.activity-text {
-  color: var(--text-primary);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-@keyframes fadeIn {
-  from {
+@keyframes fade-in {
+  0% {
     opacity: 0;
     transform: translateY(20px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
-</style>
 
-<script>
-import PageHeader from '@/components/PageHeader.vue'
-import ActionCard from '@/components/ActionCard.vue'
-
-export default {
-  name: 'PsychologistHomeView',
-  components: {
-    PageHeader,
-    ActionCard
-  }
-}
-</script>
-
-<style scoped>
-.psychologist-home {
-  animation: fadeIn var(--transition-normal);
-}
-
-.stats-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-  margin: var(--spacing-xl) 0;
-}
-
-.stat-card {
-  background: var(--bg-primary);
-  padding: var(--spacing-lg);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  transition: transform var(--transition-fast);
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  background: var(--primary-light);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-}
-
-.stat-info h3 {
-  color: var(--neutral-medium);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-xs);
-}
-
-.stat-value {
-  color: var(--neutral-dark);
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin: 0;
-}
-
-.section-title {
-  margin: var(--spacing-xl) 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.section-title h2 {
-  color: var(--neutral-dark);
-  margin: 0;
-  white-space: nowrap;
-}
-
-.title-line {
-  height: 2px;
-  background: linear-gradient(
-    to right,
-    var(--primary-light),
-    var(--bg-secondary)
-  );
-  flex-grow: 1;
-  border-radius: var(--border-radius-sm);
-}
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.recent-activity {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.activity-card {
-  padding: var(--spacing-md);
-}
-
-.activity-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-sm);
-}
-
-.activity-icon {
-  color: var(--primary-color);
-  font-size: var(--font-size-lg);
-}
-
-.activity-time {
-  color: var(--neutral-medium);
-  font-size: var(--font-size-sm);
-}
-
-.activity-text {
-  color: var(--neutral-dark);
-  margin: 0;
-  font-size: var(--font-size-md);
-}
-
-@media (max-width: 768px) {
-  .stats-overview,
-  .quick-actions,
-  .recent-activity {
-    grid-template-columns: 1fr;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
 }
 </style>

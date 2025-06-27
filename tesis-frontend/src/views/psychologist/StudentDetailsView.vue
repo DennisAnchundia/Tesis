@@ -11,7 +11,6 @@ Características principales:
 -->
 
 <template>
-  <div class="student-details-container">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <div class="header-section">
       <button class="back-btn" @click="goBack">
@@ -158,7 +157,8 @@ Características principales:
         </div>
         <div class="info-section">
           <div class="section-header">
-            <h2><i class="ri-calendar-2-line"></i> Citas Médicas</h2>
+            <h2><i class="ri-calendar-2-line"></i> Historial evaluaciones</h2>
+            
             <div class="section-actions">
               <button class="btn btn-warning" @click="showSuicideAssessmentForm = true">
                 <i class="ri-mental-health-line"></i> Realizar Evaluación
@@ -168,59 +168,29 @@ Características principales:
               </button>
             </div>
           </div>
-          
-          <div class="appointments-list">
-            <div v-if="appointments && appointments.length > 0">
-              <div v-for="appointment in appointments" :key="appointment._id" class="appointment-card">
-                <div class="appointment-header">
-                  <div class="appointment-metadata">
-                    <span class="appointment-date">
-                      <i class="ri-calendar-line"></i> {{ formatDate(appointment.date) }}
-                    </span>
-                    <span class="appointment-status" :class="'status-' + appointment.status.toLowerCase()">
-                      {{ appointment.status === 'PENDIENTE' ? 'Pendiente' :
-                         appointment.status === 'COMPLETADA' ? 'Completada' : 'Cancelada' }}
-                    </span>
-                    <span class="appointment-psychologist">
-                      <i class="ri-user-star-line"></i> Dr. {{ appointment.psychologist.firstName }} {{ appointment.psychologist.lastName }}
-                    </span>
-                  </div>
-                  <div class="appointment-actions" v-if="appointment.status === 'PENDIENTE'">
-                    <select 
-                      v-model="appointment.status" 
-                      class="status-select"
-                      @change="updateAppointmentStatus(appointment._id, $event.target.value)"
-                    >
-                      <option value="PENDIENTE">Pendiente</option>
-                      <option value="COMPLETADA">Completada</option>
-                      <option value="CANCELADA">Cancelada</option>
-                    </select>
-                    <button class="btn btn-warning btn-sm" @click="editAppointment(appointment)">
-                      <i class="ri-edit-line"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-sm" @click="cancelAppointment(appointment._id)">
-                      <i class="ri-close-circle-line"></i> Cancelar
-                    </button>
-                  </div>
-                </div>
-                <div class="appointment-details">
-                  <div class="appointment-reason">
-                    <strong>Motivo:</strong> {{ appointment.reason }}
-                  </div>
-                  <div class="appointment-notes" v-if="appointment.notes">
-                    <strong>Notas:</strong> {{ appointment.notes }}
-                  </div>
-                </div>
+          <div class="space-y-4">
+            <div
+              v-for="(evaluacion, index) in evaluaciones"
+              :key="evaluacion._id || index"
+              class="p-4 border rounded shadow bg-white"
+            >
+              <h3 class="text-lg font-semibold text-blue-800">Evaluación #{{ index + 1 }}</h3>
+        
+              <p><strong>Fecha:</strong> {{ formatDate(evaluacion.date) }}</p>
+              <p><strong>Psicólogo:</strong> {{ evaluacion.psychologist?.name }}</p>
+              <p><strong>Riesgo:</strong> {{ evaluacion.riskLevel }}</p>
+        
+              <div class="mt-2">
+                <p><strong>Deseo de muerte:</strong> {{ booleanToText(evaluacion.deathWish?.present) }}</p>
+                <p><strong>Ideación activa (con métodos):</strong> {{ booleanToText(evaluacion.activeSuicidalIdeationWithMethods?.present) }}</p>
+                <p><strong>Ideación activa (con intención):</strong> {{ booleanToText(evaluacion.activeSuicidalIdeationWithIntent?.present) }}</p>
+                <p><strong>Ideación activa (con plan):</strong> {{ booleanToText(evaluacion.activeSuicidalIdeationWithPlan?.present) }}</p>
+                <p><strong>Observaciones:</strong> {{ evaluacion.observations }}</p>
+                <p><strong>Comentarios finales:</strong> {{ evaluacion.finalRemarks }}</p>
               </div>
             </div>
-            <div v-else class="empty-state">
-              <i class="ri-calendar-line"></i>
-              <p>No hay citas programadas</p>
-              <button class="btn btn-primary" @click="showAppointmentForm = true">
-                <i class="ri-add-line"></i> Agendar Primera Cita
-              </button>
-            </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -303,7 +273,120 @@ Características principales:
         </div>
       </div>
     </div>
-  </div>
+  <div>
+      <!-- Botón para generar el reporte -->
+      <button @click="downloadReport(student._id)">
+        Descargar reporte PDF
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div v-for="assessment in suicideAssessments" :key="assessment._id" class="p-4 border rounded shadow">
+        <h3 class="font-bold text-lg mb-2">
+          Evaluación de {{ assessment.student.firstName }} {{ assessment.student.lastName }}
+        </h3>
+        <p><strong>Psicólogo:</strong> {{ assessment.psychologist.name }}</p>
+        <p><strong>Fecha:</strong> {{ new Date(assessment.date).toLocaleDateString() }}</p>
+        <p><strong>Nivel de riesgo:</strong> {{ assessment.riskLevel }}</p>
+        <p><strong>Observaciones:</strong> {{ assessment.observations || 'Ninguna' }}</p>
+        <p><strong>Comentarios finales:</strong> {{ assessment.finalRemarks || 'Ninguno' }}</p>
+    
+        <div class="mt-2">
+          <strong>Detalles de ideación:</strong>
+          <ul class="list-disc list-inside">
+            <li>Deseo de morir: <span class="font-semibold">{{assessment.deathWish.present ? 'Sí' : 'No' }}</span></li>
+            <li>Pensamientos suicidas activos no específicos: <span>{{assessment.nonSpecificActiveSuicidalThoughts.present ? 'Sí' : 'No' }}</span></li>
+            <li>Ideación suicida activa con cualquier método (no un plan) sin intención de actuar: <span>{{assessment.activeSuicidalIdeationWithMethods.present ? 'Sí' : 'No' }}</span></li>
+            <li>Ideación suicida activa con cierta intención de actuar, sin un plan específico: <span>{{assessment.activeSuicidalIdeationWithIntent.present ? 'Sí' : 'No' }}</span></li>
+            <li>Ideación suicida activa con un plan específico e intención: <span>{{assessment.activeSuicidalIdeationWithPlan.present ? 'Sí' : 'No' }}</span></li>
+            <li>Tipo más serio: <span>{{ assessment.ideationIntensity.mostSeriousIdeationDescription }}</span></li>
+            <li>Frecuencia: <span>{{ assessment.ideationIntensity.frequency }}</span></li>
+          </ul>
+          <strong>Intensidad de la Ideacion:</strong>
+          <ul class="list-disc list-inside">
+            <li>Ideación más seria: <span class="font-semibold">{{assessment.ideationIntensity.mostSeriousIdeationType }}</span></li>
+            <li>Descripción de la ideación: <span class="font-semibold">{{assessment.ideationIntensity.mostSeriousIdeationDescription }}</span></li>
+            <li>¿Cuántas veces has tenido estos pensamientos?: <span class="font-semibold">{{assessment.ideationIntensity.frequency }}</span></li>
+          </ul>
+          <strong>Comportamiento suicida:</strong>
+          <ul class="list-disc list-inside">
+            <li v-if="assessment.actualAttempt.present !== false">
+              Un intento suicida real implica un acto con cierto deseo de morir, incluso si no hay daño físico, mientras que la intención inferida se deduce clínicamente de la letalidad o circunstancias del acto, a pesar de la negación del individuo: 
+              <span class="font-semibold">
+                {{ assessment.actualAttempt.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.actualAttempt.description && assessment.actualAttempt.description.trim() !== ''">
+              Descripción de la ideación: <span class="font-semibold">{{ assessment.actualAttempt.description }}</span>
+            </li>            
+            <li v-if="assessment.actualAttempt.totalAttempts && assessment.actualAttempt.totalAttempts !== 0">
+              Numero total de intentos: <span class="font-semibold">{{ assessment.actualAttempt.totalAttempts }}</span>
+            </li>
+            <li v-if="assessment.nonSuicidalSelfInjury.present !== false">
+              ¿Ha tenido la persona un comportamiento autolesivo no suicida?: 
+              <span class="font-semibold">
+                {{ assessment.nonSuicidalSelfInjury.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.nonSuicidalSelfInjury.description && assessment.nonSuicidalSelfInjury.description.trim() !== ''">
+              Descripción del comportamiento autolesivo: <span class="font-semibold">{{ assessment.nonSuicidalSelfInjury.description }}</span>
+            </li>            
+            <li v-if="assessment.unknownIntentSelfInjury.present !== false">
+              ¿Ha tenido la persona un comportamiento autolesivo, con intención desconocida?: 
+              <span class="font-semibold">
+                {{ assessment.unknownIntentSelfInjury.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.unknownIntentSelfInjury.description && assessment.unknownIntentSelfInjury.description.trim() !== ''">
+              Descripción del autolesivo, con intención desconocida: <span class="font-semibold">{{ assessment.unknownIntentSelfInjury.description }}</span>
+            </li>            
+            <li v-if="assessment.interruptedAttempt.present !== false">
+              ¿Ha habido algún momento en que empezaste a hacer algo para dejar de vivir (para poner fin a tu vida o matarte), pero
+                alguien o algo te detuvo antes de que hicieras realmente algo? ¿Qué hiciste?: 
+              <span class="font-semibold">
+                {{ assessment.interruptedAttempt.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.interruptedAttempt.description && assessment.interruptedAttempt.description.trim() !== ''">
+              Descripción del Intento interrumpido:: <span class="font-semibold">{{ assessment.interruptedAttempt.description }}</span>
+            </li>            
+            <!-- <li v-if="assessment.actualAinterruptedAttemptttempt.totalAttempts && assessment.interruptedAttempt.totalAttempts !== 0">
+              Numero total de intentos: <span class="font-semibold">{{ assessment.interruptedAttempt.totalAttempts }}</span>
+            </li> -->
+            <li v-if="assessment.abortedAttempt.present !== false">
+              ¿Ha habido algún momento en que empezaste a hacer algo para dejar de vivir (para poner fin a tu vida o matarte), pero
+              cambiaste de idea (te detuviste) antes de que hicieras realmente algo? ¿Qué hiciste?: 
+              <span class="font-semibold">
+                {{ assessment.abortedAttempt.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.abortedAttempt.description && assessment.abortedAttempt.description.trim() !== ''">
+              Descripción del Intento interrumpido:: <span class="font-semibold">{{ assessment.abortedAttempt.description }}</span>
+            </li>            
+            <li v-if="assessment.abortedAttempt.totalAttempts && assessment.abortedAttempt.totalAttempts !== 0">
+              Numero total de intentos: <span class="font-semibold">{{ assessment.abortedAttempt.totalAttempts }}</span>
+            </li>
+            <li v-if="assessment.preparatoryActs.present !== false">
+              ¿Has hecho algo para estar listo/a para dejar de vivir (para poner fin a tu vida o matarte), como regalar cosas, escribir una
+                nota de despedida, obtener las cosas que tú necesitas para matarte?: 
+              <span class="font-semibold">
+                {{ assessment.preparatoryActs.present ? 'Sí' : 'No' }}
+              </span>
+            </li>
+            <li v-if="assessment.preparatoryActs.description && assessment.preparatoryActs.description.trim() !== ''">
+              Descripción de los Actos o comportamiento preparatorios: <span class="font-semibold">{{ assessment.preparatoryActs.description }}</span>
+            </li>            
+
+            
+          </ul>
+        </div>
+    
+        <div class="mt-2">
+          <strong>Intento actual:</strong>
+          <p>{{ assessment.actualAttempt.present === null ? 'No informado' : (assessment.actualAttempt.present ? 'Sí' : 'No') }}</p>
+          <p>Total intentos: {{ assessment.actualAttempt.totalAttempts }}</p>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -354,7 +437,38 @@ export default {
   /**
    * Métodos del componente para manejar la lógica de negocio
    */
+   mounted() {
+  this.fetchSuicideAssessments();
+},
   methods: {
+    async downloadReport() {
+    if (!this.student || !this.student._id) {
+      alert('No se ha cargado el estudiante correctamente.')
+      return
+    }
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.get(`http://localhost:3000/api/pdfreport/student/${this.student._id}`, {
+        responseType: 'blob',
+        headers: { 'x-token': token }
+      })
+      
+      // Crear un link para descargar
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `reporte_estudiante_${this.student._id}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error descargando el PDF:', error)
+      alert('Error al descargar el reporte.')
+    }
+  },
+
+  
     /**
      * Obtiene la lista de citas del estudiante desde el servidor
      * @async
@@ -754,6 +868,7 @@ export default {
           }
         );
         this.suicideAssessments = response.data.assessments;
+        console.log('evaluaciones', this.suicideAssessments)
       } catch (error) {
         console.error('Error al cargar las evaluaciones:', error);
         await Swal.fire({
